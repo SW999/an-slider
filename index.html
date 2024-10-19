@@ -8,7 +8,6 @@
         * {
             box-sizing: border-box;
         }
-
         div, img, section {
             margin: 0;
             padding: 0;
@@ -16,101 +15,13 @@
             font-size: 100%;
             vertical-align: baseline;
         }
-
-        img {
-            height: auto;
-            max-width: 100%;
-        }
-
         p {
             margin: 10px;
             font-size: 16px;
         }
-
         .container {
             max-width: 1024px;
             margin: 0 auto;
-        }
-
-        .an-slider-wrapper {
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-        .an-slider-wrapper * {
-            box-sizing: border-box;
-        }
-
-        .an-slide {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 0 0 calc(100vw - 16px);
-            scroll-snap-align: center;
-        }
-
-        @media (min-width: 466px) {
-            .an-slide {
-                flex: 0 0 450px;
-            }
-        }
-
-        .an-slide > img {
-            width: 100%;
-            vertical-align: bottom;
-            transition: opacity 300ms ease-in-out 0s;
-            opacity: inherit;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .an-slider {
-            overflow: scroll hidden;
-            display: flex;
-            flex-flow: row nowrap;
-            gap: 35px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            cursor: grab;
-        }
-
-        .an-slider > * {
-            scroll-snap-align: center;
-        }
-
-        .an-slider::-webkit-scrollbar {
-            display: none;
-        }
-
-        .an-slider-buttons {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 7px;
-        }
-
-        .an-slider-button {
-            width: 15px;
-            height: 15px;
-            border: 1px solid black;
-            border-radius: 100%;
-        }
-
-        @media (hover: hover) {
-            .an-slider-button {
-                width: 10px;
-                height: 10px;
-                cursor: pointer;
-            }
-
-            .an-slider-buttons {
-                gap: 4px;
-            }
-        }
-
-        .an-slider-button.active {
-            background-color: black;
-            cursor: default;
         }
     </style>
 </head>
@@ -153,154 +64,12 @@
     </section>
     <br/>
 </div>
+<script src="./js/an-slider.js" defer></script>
 <script>
-    class AnSlider {
-        constructor(selector, indicators = true) {
-            this.selector = selector;
-            this.sliderElement = document.querySelector(this.selector);
-            this.slider = null;
-            this.slides = null;
-            this.indicators = indicators;
-            this.sliderId = Math.floor(Math.random() * 1000000); // generate a unique id for a slider
-            this.isTouchSupported = 'ontouchstart' in window;
-            this.activeSlideIndex = 0;
-            this.buttons = [];
-            this.init();
-        }
-
-        #debounce(func, delay) {
-            let timeoutId;
-            return function (...args) {
-                clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => func(...args), delay);
-            }
-        }
-
-        #handleScroll() {
-            const pos = this.slider.getBoundingClientRect();
-            const sliderWidth = this.slider.offsetWidth;
-            const scrollPosition = this.slider.scrollLeft;
-            const scrollWidth = this.slider.scrollWidth;
-
-            if (pos) {
-                this.buttons[this.activeSlideIndex]?.classList.remove('active');
-
-                if (scrollPosition + sliderWidth >= scrollWidth) {
-                    this.activeSlideIndex = this.slides.length - 1; // Last slide
-                } else if (scrollPosition <= 0) {
-                    this.activeSlideIndex = 0; // First slide
-                } else {
-                    // Element id in the middle of the slider
-                    const elementInCenterId = document.elementsFromPoint(pos.x + pos.width / 2, pos.y + pos.height / 2)
-                        .find((el) => el.classList.contains('an-slide'))?.id;
-
-                    if (elementInCenterId) {
-                        const parts = elementInCenterId.split('-');
-                        this.activeSlideIndex = parseInt(parts[1]);
-                    }
-                }
-
-                this.buttons[this.activeSlideIndex]?.classList.add('active');
-            }
-        }
-
-        #addDragEvents() {
-            if (this.isTouchSupported) {
-                return
-            }
-
-            let dragged = false;
-            let oldX = 0;
-
-            this.slider.addEventListener('mousedown', (e) => {
-                oldX = e.pageX;
-                dragged = false;
-            })
-
-            this.slider.addEventListener('mousemove', (e) => {
-                if (!dragged) {
-                    dragged = true;
-                }
-            })
-
-            this.slider.addEventListener('mouseup', (e) => {
-                if (dragged && e.pageX < oldX) {
-                    // Move to the right
-                    this.slides[this.activeSlideIndex + 1]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest',
-                        inline: 'center'
-                    });
-                } else if (dragged && e.pageX > oldX) {
-                    // Move to the left
-                    this.slides[this.activeSlideIndex - 1]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest',
-                        inline: 'center'
-                    });
-                }
-            })
-        }
-
-        init() {
-            if (!this.sliderElement) {
-                console.error(`Element with selector ${this.selector} not found`);
-                return;
-            }
-
-            this.sliderElement.classList.add('an-slider-wrapper');
-            const slides = this.sliderElement.children;
-
-            if (slides.length < 1) {
-                console.error(`Element with selector ${this.selector} has no slides`);
-                return;
-            }
-
-            const slider = document.createElement('div');
-            let sliderButtons;
-
-            slider.classList.add('an-slider');
-
-            if (this.indicators) {
-                sliderButtons = document.createElement('div');
-                sliderButtons.classList.add('an-slider-buttons');
-            }
-
-            Array.from(slides).forEach((slide, index) => {
-                const slideWrapper = document.createElement('div');
-                slideWrapper.classList.add('an-slide');
-                slideWrapper.id = `slide-${index}-${this.sliderId}-id`;
-                slideWrapper.appendChild(slide);
-                slider.appendChild(slideWrapper);
-
-                if (this.indicators) {
-                    const button = document.createElement('div');
-                    button.id = `slide-${index}-btn-${this.sliderId}`;
-                    button.className = index === 0 ? 'an-slider-button active' : 'an-slider-button';
-                    button.addEventListener('click', () => {
-                        const slideElement = document.getElementById(`slide-${index}-${this.sliderId}-id`);
-                        slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
-                    });
-                    sliderButtons.appendChild(button);
-                    this.buttons.push(button);
-                }
-            });
-
-            this.sliderElement.appendChild(slider);
-            this.slider = this.sliderElement.querySelector('.an-slider');
-            this.slides = this.slider.querySelectorAll('.an-slide');
-
-            if (this.indicators) {
-                this.sliderElement.appendChild(sliderButtons);
-            }
-
-            this.slider.addEventListener('scroll', this.#debounce(this.#handleScroll.bind(this), 200));
-            this.#addDragEvents();
-        }
-    }
-
-    new AnSlider('.slider1')
-    new AnSlider('.slider2', false)
+    document.addEventListener('DOMContentLoaded', function() {
+        new AnSlider('.slider1')
+        new AnSlider('.slider2', false)
+    })
 </script>
 </body>
 </html>
