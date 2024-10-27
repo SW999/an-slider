@@ -58,93 +58,62 @@ class AnSlider {
             return;
         }
 
-        // const self = this;
-        // let startX = 0;
-        // let startY = 0;
-        // let isDown = false;
-        //
-        // this.slider.addEventListener('mousedown', handleMouseDown);
-        // this.slider.addEventListener('mousemove', handleMouseMove);
-        // this.slider.addEventListener('mouseup', handleMouseUp);
-        //
-        // function handleMouseDown(e) {
-        //     startX = e.clientX;
-        //     startY = e.clientY;
-        //     isDown = true;
-        // }
-        //
-        // function handleMouseMove(e) {
-        //     if (!isDown) return;
-        //
-        //     const diffX = e.clientX - startX;
-        //     const diffY = e.clientY - startY;
-        //
-        //     if (Math.abs(diffX) > Math.abs(diffY)) {
-        //         if (diffX > 0) {
-        //             self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
-        //                 behavior: 'smooth',
-        //                 block: 'nearest',
-        //                 inline: 'center'
-        //             });
-        //             console.log('Swipe right');
-        //         } else {
-        //             self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
-        //                 behavior: 'smooth',
-        //                 block: 'nearest',
-        //                 inline: 'center'
-        //             });
-        //             console.log('Swipe left');
-        //         }
-        //     }
-        // }
-        //
-        // function handleMouseUp() {
-        //     isDown = false;
-        // }
-
         const self = this;
         let xDown = null;
         let yDown = null;
+        let isDragging = false;
 
         function start(e) {
-            xDown = e.clientX;
-            yDown = e.clientY;
+            if (e.button === 0) { // Only respond to left mouse button
+                xDown = e.clientX;
+                yDown = e.clientY;
+                isDragging = true;
+            }
         }
 
         function swipe(e) {
-            const xUp = e.clientX;
-            const yUp = e.clientY;
+            if (isDragging && Math.abs(e.clientX - xDown) > 5) {
+                const xUp = e.clientX;
+                const yUp = e.clientY;
 
-            if (!xDown || !yDown) return;
+                if (!xDown || !yDown) return;
 
-            const xDiff = xDown - xUp;
-            const yDiff = yDown - yUp;
+                const xDiff = xDown - xUp;
+                const yDiff = yDown - yUp;
 
-            if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                // Right swipe
-                if (xDiff > 0) {
-                    self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest',
-                        inline: 'center'
-                    });
+                if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                    // Right swipe
+                    if (xDiff > 0) {
+                        self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'center'
+                        });
+                    }
+                    // Left swipe
+                    else {
+                        self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'center'
+                        });
+                    }
                 }
-                // Left swipe
-                else {
-                    self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest',
-                        inline: 'center'
-                    });
-                }
+
+                xDown = null;
+                yDown = null;
             }
+        }
 
+        function end() {
+            isDragging = false;
             xDown = null;
             yDown = null;
         }
 
         this.slider.addEventListener('mousedown', start);
         this.slider.addEventListener('mousemove', swipe);
+        this.slider.addEventListener('mouseup', end);
     }
 
     #loadStyles() {
@@ -156,7 +125,78 @@ class AnSlider {
 
         const sliderStyles = document.createElement('style');
         sliderStyles.id = id;
-        sliderStyles.textContent = '.an-slide>img,.an-slider-wrapper{max-width:100%}.an-slide,.an-slider>*{scroll-snap-align:center}.an-slider-wrapper,.an-slider-wrapper *{box-sizing:border-box}.an-slide>img{height:auto;width:100%;vertical-align:bottom;transition:opacity .3s ease-in-out;opacity:inherit;pointer-events:none;user-select:none}.an-slide{display:flex;justify-content:center;align-items:center;flex:0 0 calc(100vw - 16px)}@media (min-width:466px){.an-slide{flex:0 0 450px}}.an-slider{overflow:scroll hidden;display:flex;flex-flow:row nowrap;gap:35px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;cursor:grab}.an-slider::-webkit-scrollbar{display:none}.an-slider-buttons{margin-top:10px;display:flex;justify-content:center;gap:7px}.an-slider-button{width:15px;height:15px;border:1px solid #000;border-radius:100%}@media (hover:hover){.an-slider-button{width:10px;height:10px;cursor:pointer}.an-slider-buttons{gap:4px}}.an-slider-button.active{background-color:#000;cursor:default}';
+        sliderStyles.textContent = `
+.an-slide > img,
+.an-slider-wrapper {
+  max-width: 100%;
+}
+.an-slide,
+.an-slider > * {
+  scroll-snap-align: center;
+}
+.an-slider-wrapper,
+.an-slider-wrapper * {
+  box-sizing: border-box;
+}
+.an-slide > img {
+  height: auto;
+  width: 100%;
+  vertical-align: bottom;
+  transition: opacity 0.3s ease-in-out;
+  opacity: inherit;
+  pointer-events: none;
+  user-select: none;
+}
+.an-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 calc(100vw - 16px);
+}
+@media (min-width: 466px) {
+  .an-slide {
+    flex: 0 0 450px;
+  }
+}
+.an-slider {
+  overflow: scroll hidden;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 35px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+.an-slider::-webkit-scrollbar {
+  display: none;
+}
+.an-slider-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+.an-slider-button {
+  width: 15px;
+  height: 15px;
+  border: 1px solid #000;
+  border-radius: 100%;
+}
+@media (hover: hover) {
+  .an-slider-button {
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+  }
+  .an-slider-buttons {
+    gap: 4px;
+  }
+}
+.an-slider-button.active {
+  background-color: #000;
+  cursor: default;
+}
+`;
         document.head.appendChild(sliderStyles);
     }
 
