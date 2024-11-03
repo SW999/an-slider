@@ -1,5 +1,5 @@
 class AnSlider {
-    constructor(selector, indicators = true) {
+    constructor(selector, indicators = true, arrows = false) {
         if (!selector) {
             console.error('Selector is empty');
             return
@@ -10,6 +10,9 @@ class AnSlider {
         this.slider = null;
         this.slides = null;
         this.indicators = indicators;
+        this.arrows = arrows;
+        this.leftArrow = null;
+        this.rightArrow = null;
         this.sliderId = Math.floor(Math.random() * 1000000); // generate a unique id for a slider
         this.isTouchSupported = 'ontouchstart' in window;
         this.activeSlideIndex = 0;
@@ -50,6 +53,11 @@ class AnSlider {
             }
 
             this.buttons[this.activeSlideIndex]?.classList.add('active');
+
+            if (this.arrows) {
+                this.leftArrow?.classList.toggle('an-slider-hidden', this.activeSlideIndex === 0);
+                this.rightArrow?.classList.toggle('an-slider-hidden', this.activeSlideIndex === this.slides.length - 1);
+            }
         }
     }
 
@@ -138,6 +146,12 @@ class AnSlider {
 .an-slider-wrapper * {
   box-sizing: border-box;
 }
+.an-slider-with-arrows{
+position:relative
+}
+.an-slider-hidden{
+display:none
+}
 .an-slide > img {
   height: auto;
   width: 100%;
@@ -196,6 +210,25 @@ class AnSlider {
   background-color: #000;
   cursor: default;
 }
+.an-slider-left-arrow{
+left: 10px;
+background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>');
+}
+.an-slider-right-arrow{
+right: 10px;
+background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>');
+}
+.an-slider-left-arrow,
+.an-slider-right-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 14px;
+  height: 32px;
+  cursor: pointer;
+}
 `;
         document.head.appendChild(sliderStyles);
     }
@@ -222,6 +255,24 @@ class AnSlider {
         if (this.indicators) {
             sliderButtons = document.createElement('div');
             sliderButtons.classList.add('an-slider-buttons');
+        }
+
+        if (this.arrows) {
+            this.leftArrow = document.createElement('div');
+            this.leftArrow.classList.add('an-slider-left-arrow', 'an-slider-hidden');
+            this.leftArrow.addEventListener('click', () => {
+                this.slides[this.activeSlideIndex - 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+            });
+
+            this.rightArrow = document.createElement('div');
+            this.rightArrow.classList.add('an-slider-right-arrow');
+            this.rightArrow.addEventListener('click', () => {
+                this.slides[this.activeSlideIndex + 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+            });
+
+            this.sliderElement.classList.add('an-slider-with-arrows');
+            slider.appendChild(this.leftArrow);
+            slider.appendChild(this.rightArrow);
         }
 
         Array.from(slides).forEach((slide, index) => {

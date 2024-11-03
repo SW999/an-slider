@@ -63,12 +63,21 @@
         <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
     </section>
     <br/>
+    <section class="slider3">
+        <img alt="1" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture1">
+        <img alt="2" src="https://placehold.co/600x500/EEE/00F/png?text=Some\nPicture2">
+        <img alt="3" src="https://placehold.co/600x500/EEE/F00/png?text=Another\nPicture3">
+        <img alt="4" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture4">
+        <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
+    </section>
+    <br/>
 </div>
 <script src="./js/an-slider.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         new AnSlider('.slider1')
         new AnSlider('.slider2', false)
+        new AnSlider('.slider3', true, true)
     })
 </script>
 </body>
