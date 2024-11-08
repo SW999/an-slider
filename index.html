@@ -57,10 +57,10 @@
         iaculis euismod neque. Ut bibendum maximus justo, eu congue orci pretium eu.
     </p>
     <section class="slider2">
-        <img alt="2" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture2">
-        <img alt="3" src="https://placehold.co/600x500/EEE/00F/png?text=Some\nPicture3">
-        <img alt="4" src="https://placehold.co/600x500/EEE/F00/png?text=Another\nPicture4">
-        <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
+        <img alt="2" src="https://placehold.co/300x100/EEE/F00/png?text=Another\nPicture0">
+        <img alt="3" src="https://placehold.co/300x100/EEE/0F0/png?text=Some\nPicture1">
+        <img alt="4" src="https://placehold.co/300x100/EEE/F00/png?text=Another\nPicture2">
+        <img alt="5" src="https://placehold.co/300x100/EEE/0F0/png?text=New\nPicture3">
     </section>
     <br/>
     <section class="slider3">
@@ -74,10 +74,10 @@
 </div>
 <script src="./js/an-slider.js" defer></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        new AnSlider('.slider1')
-        new AnSlider('.slider2', false)
-        new AnSlider('.slider3', true, true)
+    document.addEventListener('DOMContentLoaded', function () {
+        new AnSlider({selector: '.slider1'})
+        new AnSlider({selector: '.slider2', indicators: false})
+        new AnSlider({selector: '.slider3', indicators: true, arrows: true})
     })
 </script>
 </body>

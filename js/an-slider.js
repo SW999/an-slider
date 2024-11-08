@@ -1,5 +1,5 @@
 class AnSlider {
-    constructor(selector, indicators = true, arrows = false) {
+    constructor({selector, indicators = true, arrows = false}) {
         if (!selector) {
             console.error('Selector is empty');
             return
@@ -13,7 +13,7 @@ class AnSlider {
         this.arrows = arrows;
         this.leftArrow = null;
         this.rightArrow = null;
-        this.sliderId = Math.floor(Math.random() * 1000000); // generate a unique id for a slider
+        this.sliderId = Date.now();
         this.isTouchSupported = 'ontouchstart' in window;
         this.activeSlideIndex = 0;
         this.buttons = [];
@@ -136,15 +136,15 @@ class AnSlider {
         sliderStyles.textContent = `
 .an-slide > img,
 .an-slider-wrapper {
-  max-width: 100%;
+  max-width: 100%
 }
 .an-slide,
 .an-slider > * {
-  scroll-snap-align: center;
+  scroll-snap-align: center
 }
 .an-slider-wrapper,
 .an-slider-wrapper * {
-  box-sizing: border-box;
+  box-sizing: border-box
 }
 .an-slider-with-arrows{
 position:relative
@@ -159,17 +159,17 @@ display:none
   transition: opacity 0.3s ease-in-out;
   opacity: inherit;
   pointer-events: none;
-  user-select: none;
+  user-select: none
 }
 .an-slide {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 0 0 calc(100vw - 16px);
+  flex: 0 0 calc(100vw - 16px)
 }
 @media (min-width: 466px) {
   .an-slide {
-    flex: 0 0 450px;
+    flex: 0 0 450px
   }
 }
 .an-slider {
@@ -179,44 +179,44 @@ display:none
   gap: 35px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  cursor: grab;
+  cursor: grab
 }
 .an-slider::-webkit-scrollbar {
-  display: none;
+  display: none
 }
 .an-slider-buttons {
   margin-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 7px;
+  gap: 7px
 }
 .an-slider-button {
   width: 15px;
   height: 15px;
   border: 1px solid #000;
-  border-radius: 100%;
+  border-radius: 100%
 }
 @media (hover: hover) {
   .an-slider-button {
     width: 10px;
     height: 10px;
-    cursor: pointer;
+    cursor: pointer
   }
   .an-slider-buttons {
-    gap: 4px;
+    gap: 4px
   }
 }
 .an-slider-button.active {
   background-color: #000;
-  cursor: default;
+  cursor: default
 }
 .an-slider-left-arrow{
 left: 10px;
-background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>');
+background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>')
 }
 .an-slider-right-arrow{
 right: 10px;
-background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>');
+background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>')
 }
 .an-slider-left-arrow,
 .an-slider-right-arrow {
@@ -227,7 +227,7 @@ background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="h
   background-repeat: no-repeat;
   width: 14px;
   height: 32px;
-  cursor: pointer;
+  cursor: pointer
 }
 `;
         document.head.appendChild(sliderStyles);
@@ -278,7 +278,7 @@ background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="h
         Array.from(slides).forEach((slide, index) => {
             const slideWrapper = document.createElement('div');
             slideWrapper.classList.add('an-slide');
-            slideWrapper.id = `slide-${index}-${this.sliderId}-id`;
+            slideWrapper.id = `slide-${index}-${this.sliderId}`;
             slideWrapper.appendChild(slide);
             slider.appendChild(slideWrapper);
 
@@ -287,7 +287,7 @@ background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="h
                 button.id = `slide-${index}-btn-${this.sliderId}`;
                 button.className = index === 0 ? 'an-slider-button active' : 'an-slider-button';
                 button.addEventListener('click', () => {
-                    const slideElement = document.getElementById(`slide-${index}-${this.sliderId}-id`);
+                    const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
                     slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
                 });
                 sliderButtons.appendChild(button);
