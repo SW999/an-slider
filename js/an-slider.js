@@ -20,7 +20,7 @@ class AnSlider {
         this.init();
     }
 
-    #debounce(func, delay) {
+    debounce(func, delay) {
         let timeoutId;
         return function (...args) {
             clearTimeout(timeoutId);
@@ -28,7 +28,7 @@ class AnSlider {
         }
     }
 
-    #handleScroll() {
+    handleScroll() {
         const pos = this.slider.getBoundingClientRect();
         const sliderWidth = this.slider.offsetWidth;
         const scrollPosition = this.slider.scrollLeft;
@@ -61,7 +61,7 @@ class AnSlider {
         }
     }
 
-    #addDragEvents() {
+    addDragEvents() {
         if (this.isTouchSupported) {
             return;
         }
@@ -124,7 +124,7 @@ class AnSlider {
         this.slider.addEventListener('mouseup', end);
     }
 
-    #loadStyles() {
+    loadStyles() {
         const id = 'anSliderStyles';
 
         if (document.getElementById(id)) {
@@ -147,7 +147,7 @@ class AnSlider {
   box-sizing: border-box
 }
 .an-slider-with-arrows{
-position:relative
+  position: relative
 }
 .an-slider-hidden{
 display:none
@@ -211,12 +211,12 @@ display:none
   cursor: default
 }
 .an-slider-left-arrow{
-left: 10px;
-background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>')
+  left: 10px;
+  background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>')
 }
 .an-slider-right-arrow{
-right: 10px;
-background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>')
+  right: 10px;
+  background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>')
 }
 .an-slider-left-arrow,
 .an-slider-right-arrow {
@@ -295,7 +295,7 @@ background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="h
             }
         });
 
-        this.#loadStyles();
+        this.loadStyles();
         this.sliderElement.appendChild(slider);
         this.slider = this.sliderElement.querySelector('.an-slider');
         this.slides = this.slider.querySelectorAll('.an-slide');
@@ -304,7 +304,7 @@ background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="h
             this.sliderElement.appendChild(sliderButtons);
         }
 
-        this.slider.addEventListener('scroll', this.#debounce(this.#handleScroll.bind(this), 200));
-        this.#addDragEvents();
+        this.slider.addEventListener('scroll', this.debounce(this.handleScroll.bind(this), 200));
+        this.addDragEvents();
     }
 }
