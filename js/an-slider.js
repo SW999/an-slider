@@ -165,7 +165,9 @@ display:none
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 0 0 calc(100vw - 16px)
+  flex: 0 0 calc(100vw - 16px);
+  visibility: visible;
+  transition: opacity 0.3s ease-in-out
 }
 @media (min-width: 466px) {
   .an-slide {
@@ -179,7 +181,11 @@ display:none
   gap: 35px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  cursor: grab
+  cursor: grab;
+  visibility: hidden
+}
+.an-slider:hover > :not(:hover) {
+  opacity: 0.5
 }
 .an-slider::-webkit-scrollbar {
   display: none
