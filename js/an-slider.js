@@ -44,7 +44,7 @@ class AnSlider {
             } else {
                 // Element id in the middle of the slider
                 const elementInCenterId = document.elementsFromPoint(pos.x + pos.width / 2, pos.y + pos.height / 2)
-                    .find((el) => el.classList.contains('an-slide'))?.id;
+                    .find((el) => el.classList.contains('anSlide'))?.id;
 
                 if (elementInCenterId) {
                     const parts = elementInCenterId.split('-');
@@ -55,8 +55,8 @@ class AnSlider {
             this.buttons[this.activeSlideIndex]?.classList.add('active');
 
             if (this.arrows) {
-                this.leftArrow?.classList.toggle('an-slider-hidden', this.activeSlideIndex === 0);
-                this.rightArrow?.classList.toggle('an-slider-hidden', this.activeSlideIndex === this.slides.length - 1);
+                this.leftArrow?.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0);
+                this.rightArrow?.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1);
             }
         }
     }
@@ -134,25 +134,25 @@ class AnSlider {
         const sliderStyles = document.createElement('style');
         sliderStyles.id = id;
         sliderStyles.textContent = `
-.an-slide > img,
-.an-slider-wrapper {
+.anSlide > img,
+.anSlider-wrapper {
   max-width: 100%
 }
-.an-slide,
-.an-slider > * {
+.anSlide,
+.anSlider > * {
   scroll-snap-align: center
 }
-.an-slider-wrapper,
-.an-slider-wrapper * {
+.anSlider-wrapper,
+.anSlider-wrapper * {
   box-sizing: border-box
 }
-.an-slider-with-arrows{
+.anSlider-with-arrows{
   position: relative
 }
-.an-slider-hidden{
-display:none
+.anSlider-hidden{
+  display:none
 }
-.an-slide > img {
+.anSlide > img {
   height: auto;
   width: 100%;
   vertical-align: bottom;
@@ -161,7 +161,7 @@ display:none
   pointer-events: none;
   user-select: none
 }
-.an-slide {
+.anSlide {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -170,11 +170,11 @@ display:none
   transition: opacity 0.3s ease-in-out
 }
 @media (min-width: 466px) {
-  .an-slide {
+  .anSlide {
     flex: 0 0 450px
   }
 }
-.an-slider {
+.anSlider {
   overflow: scroll hidden;
   display: flex;
   flex-flow: row nowrap;
@@ -184,48 +184,48 @@ display:none
   cursor: grab;
   visibility: hidden
 }
-.an-slider:hover > :not(:hover) {
-  opacity: 0.5
-}
-.an-slider::-webkit-scrollbar {
+.anSlider::-webkit-scrollbar {
   display: none
 }
-.an-slider-buttons {
+.anSlider-buttons {
   margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 7px
 }
-.an-slider-button {
+.anSlider-button {
   width: 15px;
   height: 15px;
   border: 1px solid #000;
   border-radius: 100%
 }
 @media (hover: hover) {
-  .an-slider-button {
+  .anSlider-button {
     width: 10px;
     height: 10px;
     cursor: pointer
   }
-  .an-slider-buttons {
+  .anSlider-buttons {
     gap: 4px
   }
+  .anSlider:hover > :not(:hover) {
+    opacity: 0.5
+  }
 }
-.an-slider-button.active {
+.anSlider-button.active {
   background-color: #000;
   cursor: default
 }
-.an-slider-left-arrow{
+.anSlider-left-arrow {
   left: 10px;
   background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>')
 }
-.an-slider-right-arrow{
+.anSlider-right-arrow {
   right: 10px;
   background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>')
 }
-.an-slider-left-arrow,
-.an-slider-right-arrow {
+.anSlider-left-arrow,
+.anSlider-right-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -245,7 +245,7 @@ display:none
             return;
         }
 
-        this.sliderElement.classList.add('an-slider-wrapper');
+        this.sliderElement.classList.add('anSlider-wrapper');
         const slides = this.sliderElement.children;
 
         if (slides.length < 1) {
@@ -256,34 +256,32 @@ display:none
         const slider = document.createElement('div');
         let sliderButtons;
 
-        slider.classList.add('an-slider');
+        slider.classList.add('anSlider');
 
         if (this.indicators) {
             sliderButtons = document.createElement('div');
-            sliderButtons.classList.add('an-slider-buttons');
+            sliderButtons.classList.add('anSlider-buttons');
         }
 
         if (this.arrows) {
             this.leftArrow = document.createElement('div');
-            this.leftArrow.classList.add('an-slider-left-arrow', 'an-slider-hidden');
+            this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden');
             this.leftArrow.addEventListener('click', () => {
                 this.slides[this.activeSlideIndex - 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
             });
 
             this.rightArrow = document.createElement('div');
-            this.rightArrow.classList.add('an-slider-right-arrow');
+            this.rightArrow.classList.add('anSlider-right-arrow');
             this.rightArrow.addEventListener('click', () => {
                 this.slides[this.activeSlideIndex + 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
             });
 
-            this.sliderElement.classList.add('an-slider-with-arrows');
-            slider.appendChild(this.leftArrow);
-            slider.appendChild(this.rightArrow);
+            this.sliderElement.classList.add('anSlider-with-arrows');
         }
 
         Array.from(slides).forEach((slide, index) => {
             const slideWrapper = document.createElement('div');
-            slideWrapper.classList.add('an-slide');
+            slideWrapper.classList.add('anSlide');
             slideWrapper.id = `slide-${index}-${this.sliderId}`;
             slideWrapper.appendChild(slide);
             slider.appendChild(slideWrapper);
@@ -291,7 +289,7 @@ display:none
             if (this.indicators) {
                 const button = document.createElement('div');
                 button.id = `slide-${index}-btn-${this.sliderId}`;
-                button.className = index === 0 ? 'an-slider-button active' : 'an-slider-button';
+                button.className = index === 0 ? 'anSlider-button active' : 'anSlider-button';
                 button.addEventListener('click', () => {
                     const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
                     slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
@@ -303,11 +301,16 @@ display:none
 
         this.loadStyles();
         this.sliderElement.appendChild(slider);
-        this.slider = this.sliderElement.querySelector('.an-slider');
-        this.slides = this.slider.querySelectorAll('.an-slide');
+        this.slider = this.sliderElement.querySelector('.anSlider');
+        this.slides = this.slider.querySelectorAll('.anSlide');
 
         if (this.indicators) {
             this.sliderElement.appendChild(sliderButtons);
+        }
+
+        if (this.arrows) {
+            this.sliderElement.appendChild(this.leftArrow);
+            this.sliderElement.appendChild(this.rightArrow);
         }
 
         this.slider.addEventListener('scroll', this.debounce(this.handleScroll.bind(this), 200));
