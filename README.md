@@ -13,6 +13,7 @@ An(other) js slider. A lightweight and customizable slider component made with p
 * **Keyboard navigation**: Allows navigation using keyboard arrows
 * **Customizable**: Easily customize the slider's appearance and behavior
 * **No dependencies**: Made with pure JavaScript, without any libraries or frameworks
+* **Accessible**: Supports accessibility features for users with disabilities
 
 **Usage**
 -----
@@ -65,4 +66,4 @@ MIT License
 - [ ] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
 - [ ] Add `slideChange` - custom event. Fired when the active slide changes
 - [ ] Add methods `next`, `prev`, `goTo`, `destroy`
-- [ ] Add accessibility support
+- [x] Add accessibility support

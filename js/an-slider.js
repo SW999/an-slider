@@ -55,8 +55,11 @@ class AnSlider {
             this.buttons[this.activeSlideIndex]?.classList.add('active');
 
             if (this.arrows) {
-                this.leftArrow?.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0);
-                this.rightArrow?.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1);
+                this.leftArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0);
+                this.rightArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1);
+
+                this.leftArrow.ariaHidden = String(this.activeSlideIndex === 0);
+                this.rightArrow.ariaHidden = String(this.activeSlideIndex === this.slides.length - 1);
             }
         }
     }
@@ -246,6 +249,8 @@ class AnSlider {
         }
 
         this.sliderElement.classList.add('anSlider-wrapper');
+        this.sliderElement.role = 'region';
+        this.sliderElement.ariaLive = 'polite';
         const slides = this.sliderElement.children;
 
         if (slides.length < 1) {
@@ -266,14 +271,25 @@ class AnSlider {
         if (this.arrows) {
             this.leftArrow = document.createElement('div');
             this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden');
+            this.leftArrow.ariaHidden = 'true';
+            this.leftArrow.ariaLabel = 'Back';
             this.leftArrow.addEventListener('click', () => {
-                this.slides[this.activeSlideIndex - 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+                this.slides[this.activeSlideIndex - 1]?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center'
+                });
             });
 
             this.rightArrow = document.createElement('div');
             this.rightArrow.classList.add('anSlider-right-arrow');
+            this.rightArrow.ariaLabel = 'Forward';
             this.rightArrow.addEventListener('click', () => {
-                this.slides[this.activeSlideIndex + 1]?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+                this.slides[this.activeSlideIndex + 1]?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center'
+                });
             });
 
             this.sliderElement.classList.add('anSlider-with-arrows');
@@ -290,6 +306,8 @@ class AnSlider {
                 const button = document.createElement('div');
                 button.id = `slide-${index}-btn-${this.sliderId}`;
                 button.className = index === 0 ? 'anSlider-button active' : 'anSlider-button';
+                button.ariaCurrent = String(index === 0);
+                button.ariaLabel = `Go to slide ${index + 1}`;
                 button.addEventListener('click', () => {
                     const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
                     slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
