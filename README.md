@@ -1,6 +1,3 @@
-# an-slider
-an(other) js slider
-
 **An-Slider**
 ================
 
