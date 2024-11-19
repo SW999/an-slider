@@ -51,6 +51,8 @@ An(other) js slider. A lightweight and customizable slider component made with p
 * `indicators`: Whether to add dot indicator for each slide (default: `true`)
 * `arrows`: Whether to add arrows for navigation (default: `false`)
 * `initialIndex`: Index of the initial slide (default: `0`)
+* `buttonColor`: Color of the navigation buttons (default: `#000`)
+* `arrowColor`: Color of the arrows (default: `#000`)
 
 **License**
 ------------

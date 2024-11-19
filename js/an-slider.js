@@ -1,5 +1,5 @@
 class AnSlider {
-    constructor({selector, indicators = true, arrows = false, initialIndex = 0}) {
+    constructor({selector, indicators = true, arrows = false, initialIndex = 0, buttonColor, arrowColor}) {
         if (!selector) {
             console.error('Selector is empty');
             return
@@ -11,9 +11,11 @@ class AnSlider {
         this.slides = null;
         this.indicators = indicators;
         this.arrows = arrows;
+        this.buttonColor = buttonColor;
+        this.arrowColor = arrowColor;
         this.leftArrow = null;
         this.rightArrow = null;
-        this.sliderId = Date.now();
+        this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         this.isTouchSupported = 'ontouchstart' in window;
         this.activeSlideIndex = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0;
         this.buttons = [];
@@ -137,17 +139,20 @@ class AnSlider {
         const sliderStyles = document.createElement('style');
         sliderStyles.id = id;
         sliderStyles.textContent = `
+.anSlider-wrapper,
+.anSlider-wrapper * {
+  box-sizing: border-box
+}
 .anSlide > img,
 .anSlider-wrapper {
   max-width: 100%
 }
+.anSlider-wrapper {
+  --button-color: #000;
+}
 .anSlide,
 .anSlider > * {
   scroll-snap-align: center
-}
-.anSlider-wrapper,
-.anSlider-wrapper * {
-  box-sizing: border-box
 }
 .anSlider-with-arrows {
   position: relative
@@ -199,8 +204,18 @@ class AnSlider {
 .anSlider-button {
   width: 15px;
   height: 15px;
-  border: 1px solid #000;
-  border-radius: 100%
+  border: 1px solid var(--button-color, #000);
+  border-radius: 100%;
+  transform: scale(1);
+  transition: transform 0.3s ease-out, background-color 0.3s ease-out
+}
+.anSlider-button.active {
+  margin: 0 2px ;
+  background-color: var(--button-color, #000);
+  cursor: default;
+  pointer-events: none;
+  transform: scale(1.5);
+  transition: transform 0.3s ease-in, background-color 0.3s ease-in
 }
 @media (hover: hover) {
   .anSlider-button {
@@ -214,10 +229,6 @@ class AnSlider {
   .anSlider:hover > :not(:hover) {
     opacity: 0.5
   }
-}
-.anSlider-button.active {
-  background-color: #000;
-  cursor: default
 }
 .anSlider-left-arrow {
   left: 10px;
@@ -236,10 +247,31 @@ class AnSlider {
   background-repeat: no-repeat;
   width: 14px;
   height: 32px;
-  cursor: pointer
+  cursor: pointer;
+  transition: transform 0.3s ease-in
+}
+.anSlider-left-arrow:hover,
+.anSlider-right-arrow:hover {
+  transform: translateY(-50%) scale(1.2)
 }
 `;
         document.head.appendChild(sliderStyles);
+    }
+
+    loadAdditionalStyles() {
+        const leftArrow = `data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" fill="${this.arrowColor}" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>`;
+        const rightArrow = `data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path fill="${this.arrowColor}" d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>`;
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+#anSlider-${this.sliderId} {
+.anSlider-left-arrow {
+background-image: url('${leftArrow}')
+}
+.anSlider-right-arrow {
+background-image: url('${rightArrow}')
+}
+}`
+        document.head.appendChild(additionalStyles);
     }
 
     init() {
@@ -260,6 +292,7 @@ class AnSlider {
         }
 
         this.sliderElement.classList.add('anSlider-wrapper');
+        this.sliderElement.id = `anSlider-${this.sliderId}`;
         this.sliderElement.role = 'region';
         this.sliderElement.ariaLive = 'polite';
 
@@ -296,6 +329,15 @@ class AnSlider {
         });
 
         this.loadStyles();
+
+        if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
+            this.sliderElement.style.setProperty('--button-color', this.buttonColor);
+        }
+
+        if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
+            this.loadAdditionalStyles(); // TODO: check if this is needed?
+        }
+
         this.sliderElement.appendChild(slider);
         this.slider = this.sliderElement.querySelector('.anSlider');
         this.slides = this.slider.querySelectorAll('.anSlide');

@@ -30,7 +30,8 @@
 <body>
 <div class="container">
     <h1>AnSlider - an(other) JS Slider</h1>
-    <p>An(other) js slider. A lightweight and customizable slider component made with pure JavaScript, without any dependencies.</p>
+    <p>A lightweight and customizable slider component made with pure JavaScript, without any dependencies.</p>
+    <br>
     <section class="slider1">
         <img alt="1" src="https://placehold.co/600x500/EEE/F00/png?text=Some\nPicture1">
         <img alt="2" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture2">
@@ -38,17 +39,15 @@
         <img alt="4" src="https://placehold.co/600x500/EEE/F00/png?text=Another\nPicture4">
         <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
     </section>
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vestibulum purus vitae felis pulvinar semper. Sed at
-        purus consectetur, semper urna nec, vehicula justo. Vestibulum libero ex, dignissim non scelerisque sed,
-        faucibus
-        malesuada turpis. Cras sed dui auctor, venenatis quam ut, ultrices purus. Curabitur volutpat felis diam, nec
-        venenatis nulla lacinia imperdiet. Quisque a ex at ante euismod aliquam. Nam pharetra, mauris id volutpat
-        bibendum, lorem nibh pretium eros, nec feugiat tellus massa ut ipsum. Etiam vel lorem purus. Phasellus faucibus
-        justo et efficitur malesuada. Nunc bibendum tortor auctor urna accumsan tristique. Donec a eleifend erat. Duis
-        aliquam odio quis nulla commodo rhoncus. Nulla eu tellus placerat, pretium ligula nec, dapibus sapien. Mauris
-        iaculis euismod neque. Ut bibendum maximus justo, eu congue orci pretium eu.
-    </p>
+    <h2>Features</h2>
+    <ul>
+        <li><strong>Touch-friendly</strong>: Supports touch events</li>
+        <li><strong>Keyboard navigation</strong>: Allows navigation using keyboard arrows</li>
+        <li><strong>Customizable</strong>: Easily customize the slider's appearance and behavior</li>
+        <li><strong>No dependencies</strong>: Made with pure JavaScript, without any libraries or frameworks</li>
+        <li><strong>Accessible</strong>: Supports accessibility features for users with disabilities</li>
+    </ul>
+    <br>
     <section class="slider2">
         <img alt="2" src="https://placehold.co/300x100/EEE/F00/png?text=Another\nPicture0">
         <img alt="3" src="https://placehold.co/300x100/EEE/0F0/png?text=Some\nPicture1">
@@ -72,9 +71,9 @@
 <script src="./js/an-slider.min.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AnSlider({selector: '.slider1', initialIndex: 2})
+        new AnSlider({selector: '.slider1', initialIndex: 2, buttonColor: 'orange'})
         new AnSlider({selector: '.slider2', indicators: false})
-        new AnSlider({selector: '.slider3', arrows: true})
+        new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'})
     })
 </script>
 </body>
