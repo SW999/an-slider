@@ -1,5 +1,5 @@
 class AnSlider {
-    constructor({selector, indicators = true, arrows = false}) {
+    constructor({selector, indicators = true, arrows = false, initialIndex = 0}) {
         if (!selector) {
             console.error('Selector is empty');
             return
@@ -15,7 +15,7 @@ class AnSlider {
         this.rightArrow = null;
         this.sliderId = Date.now();
         this.isTouchSupported = 'ontouchstart' in window;
-        this.activeSlideIndex = 0;
+        this.activeSlideIndex = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0;
         this.buttons = [];
         this.init();
     }
@@ -149,10 +149,10 @@ class AnSlider {
 .anSlider-wrapper * {
   box-sizing: border-box
 }
-.anSlider-with-arrows{
+.anSlider-with-arrows {
   position: relative
 }
-.anSlider-hidden{
+.anSlider-hidden {
   display:none
 }
 .anSlide > img {
@@ -248,15 +248,20 @@ class AnSlider {
             return;
         }
 
-        this.sliderElement.classList.add('anSlider-wrapper');
-        this.sliderElement.role = 'region';
-        this.sliderElement.ariaLive = 'polite';
         const slides = this.sliderElement.children;
 
         if (slides.length < 1) {
             console.error(`Element with selector ${this.selector} has no slides`);
             return;
         }
+
+        if (this.activeSlideIndex < 0 || this.activeSlideIndex > slides.length - 1) {
+            this.activeSlideIndex = 0;
+        }
+
+        this.sliderElement.classList.add('anSlider-wrapper');
+        this.sliderElement.role = 'region';
+        this.sliderElement.ariaLive = 'polite';
 
         const slider = document.createElement('div');
         let sliderButtons;
@@ -266,6 +271,37 @@ class AnSlider {
         if (this.indicators) {
             sliderButtons = document.createElement('div');
             sliderButtons.classList.add('anSlider-buttons');
+        }
+
+        Array.from(slides).forEach((slide, index) => {
+            const slideWrapper = document.createElement('div');
+            slideWrapper.classList.add('anSlide');
+            slideWrapper.id = `slide-${index}-${this.sliderId}`;
+            slideWrapper.appendChild(slide);
+            slider.appendChild(slideWrapper);
+
+            if (this.indicators) {
+                const button = document.createElement('div');
+                button.id = `slide-${index}-btn-${this.sliderId}`;
+                button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button';
+                button.ariaCurrent = String(index === this.activeSlideIndex);
+                button.ariaLabel = `Go to slide ${index + 1}`;
+                button.addEventListener('click', () => {
+                    const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
+                    slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+                });
+                sliderButtons.appendChild(button);
+                this.buttons.push(button);
+            }
+        });
+
+        this.loadStyles();
+        this.sliderElement.appendChild(slider);
+        this.slider = this.sliderElement.querySelector('.anSlider');
+        this.slides = this.slider.querySelectorAll('.anSlide');
+
+        if (this.indicators) {
+            this.sliderElement.appendChild(sliderButtons);
         }
 
         if (this.arrows) {
@@ -293,45 +329,19 @@ class AnSlider {
             });
 
             this.sliderElement.classList.add('anSlider-with-arrows');
-        }
-
-        Array.from(slides).forEach((slide, index) => {
-            const slideWrapper = document.createElement('div');
-            slideWrapper.classList.add('anSlide');
-            slideWrapper.id = `slide-${index}-${this.sliderId}`;
-            slideWrapper.appendChild(slide);
-            slider.appendChild(slideWrapper);
-
-            if (this.indicators) {
-                const button = document.createElement('div');
-                button.id = `slide-${index}-btn-${this.sliderId}`;
-                button.className = index === 0 ? 'anSlider-button active' : 'anSlider-button';
-                button.ariaCurrent = String(index === 0);
-                button.ariaLabel = `Go to slide ${index + 1}`;
-                button.addEventListener('click', () => {
-                    const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
-                    slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
-                });
-                sliderButtons.appendChild(button);
-                this.buttons.push(button);
-            }
-        });
-
-        this.loadStyles();
-        this.sliderElement.appendChild(slider);
-        this.slider = this.sliderElement.querySelector('.anSlider');
-        this.slides = this.slider.querySelectorAll('.anSlide');
-
-        if (this.indicators) {
-            this.sliderElement.appendChild(sliderButtons);
-        }
-
-        if (this.arrows) {
             this.sliderElement.appendChild(this.leftArrow);
             this.sliderElement.appendChild(this.rightArrow);
         }
 
         this.slider.addEventListener('scroll', this.debounce(this.handleScroll.bind(this), 200));
         this.addDragEvents();
+
+        if (this.activeSlideIndex !== 0) {
+            this.slides[this.activeSlideIndex]?.scrollIntoView({
+                behavior: 'instant',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
     }
 }

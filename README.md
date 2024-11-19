@@ -47,8 +47,10 @@ An(other) js slider. A lightweight and customizable slider component made with p
 **Options**
 ------------
 
+* `selector`: Selector for the container element (e.g. `.slider`, `#mySlider`)
 * `indicators`: Whether to add dot indicator for each slide (default: `true`)
 * `arrows`: Whether to add arrows for navigation (default: `false`)
+* `initialIndex`: Index of the initial slide (default: `0`)
 
 **License**
 ------------
@@ -64,3 +66,4 @@ MIT License
 - [ ] Add `slideChange` - custom event. Fired when the active slide changes
 - [ ] Add methods `next`, `prev`, `goTo`, `destroy`
 - [x] Add accessibility support
+- [x] Add `initialIndex` option

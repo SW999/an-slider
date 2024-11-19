@@ -29,17 +29,8 @@
 </head>
 <body>
 <div class="container">
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vestibulum purus vitae felis pulvinar semper. Sed at
-        purus consectetur, semper urna nec, vehicula justo. Vestibulum libero ex, dignissim non scelerisque sed,
-        faucibus
-        malesuada turpis. Cras sed dui auctor, venenatis quam ut, ultrices purus. Curabitur volutpat felis diam, nec
-        venenatis nulla lacinia imperdiet. Quisque a ex at ante euismod aliquam. Nam pharetra, mauris id volutpat
-        bibendum, lorem nibh pretium eros, nec feugiat tellus massa ut ipsum. Etiam vel lorem purus. Phasellus faucibus
-        justo et efficitur malesuada. Nunc bibendum tortor auctor urna accumsan tristique. Donec a eleifend erat. Duis
-        aliquam odio quis nulla commodo rhoncus. Nulla eu tellus placerat, pretium ligula nec, dapibus sapien. Mauris
-        iaculis euismod neque. Ut bibendum maximus justo, eu congue orci pretium eu.
-    </p>
+    <h1>AnSlider - an(other) JS Slider</h1>
+    <p>An(other) js slider. A lightweight and customizable slider component made with pure JavaScript, without any dependencies.</p>
     <section class="slider1">
         <img alt="1" src="https://placehold.co/600x500/EEE/F00/png?text=Some\nPicture1">
         <img alt="2" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture2">
@@ -81,7 +72,7 @@
 <script src="./js/an-slider.min.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AnSlider({selector: '.slider1'})
+        new AnSlider({selector: '.slider1', initialIndex: 2})
         new AnSlider({selector: '.slider2', indicators: false})
         new AnSlider({selector: '.slider3', arrows: true})
     })
