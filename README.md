@@ -54,18 +54,22 @@ An(other) js slider. A lightweight and customizable slider component made with p
 * `buttonColor`: Color of the navigation buttons (default: `#000`)
 * `arrowColor`: Color of the arrows (default: `#000`)
 
+> [!TIP]
+> 
+> Only `selector` is required. Other options are optional.
+
 **License**
 ------------
 
 MIT License
 
 
-## TODO:
-
-- [ ] Add set of default slide sizes and support for custom size
-- [ ] Add variant with previews (horizontal and vertical)
-- [ ] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
-- [ ] Add `slideChange` - custom event. Fired when the active slide changes
-- [ ] Add methods `next`, `prev`, `goTo`, `destroy`
-- [x] Add accessibility support
-- [x] Add `initialIndex` option
+> [!NOTE]
+> ## TODO:
+> - [ ] Add set of default slide sizes and support for custom size
+> - [ ] Add variant with previews (horizontal and vertical)
+> - [ ] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
+> - [ ] Add `slideChange` - custom event. Fired when the active slide changes
+> - [ ] Add methods `next`, `prev`, `goTo`, `destroy`
+> - [x] Add accessibility support
+> - [x] Add `initialIndex` option
