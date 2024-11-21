@@ -53,10 +53,17 @@ An(other) js slider. A lightweight and customizable slider component made with p
 * `initialIndex`: Index of the initial slide (default: `0`)
 * `buttonColor`: Color of the navigation buttons (default: `#000`)
 * `arrowColor`: Color of the arrows (default: `#000`)
+* `leftArrow`: Icon for the left arrow (default: `<`)
+* `rightArrow`: Icon for the right arrow (default: `>`)
 
 > [!TIP]
 > 
 > Only `selector` is required. Other options are optional.
+
+**Methods**
+------------
+
+* `destroy`: Removes the slider instance from the DOM
 
 **License**
 ------------
@@ -73,3 +80,4 @@ MIT License
 > - [ ] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
 > - [x] Add `initialIndex` option
+> - [ ] Find a way to minify the size of the library dramatically

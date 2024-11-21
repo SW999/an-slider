@@ -39,6 +39,9 @@
         <img alt="4" src="https://placehold.co/600x500/EEE/F00/png?text=Another\nPicture4">
         <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
     </section>
+    <br>
+    <button id="removeSlider" style="display:block;margin:0 auto">Remove slider</button>
+    <br>
     <h2>Features</h2>
     <ul>
         <li><strong>Touch-friendly</strong>: Supports touch events</li>
@@ -71,9 +74,17 @@
 <script src="./js/an-slider.min.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AnSlider({selector: '.slider1', initialIndex: 2, buttonColor: 'orange'})
-        new AnSlider({selector: '.slider2', indicators: false})
-        new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'})
+        const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, buttonColor: 'orange'});
+        new AnSlider({selector: '.slider2', indicators: false});
+        new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
+
+        console.log(Object.getOwnPropertyNames(slider1));
+        console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(slider1)));
+        const btn = document.getElementById('removeSlider');
+        btn.addEventListener('click', () => {
+            slider1.destroy();
+            btn.remove();
+        });
     })
 </script>
 </body>

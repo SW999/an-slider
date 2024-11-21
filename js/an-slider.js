@@ -1,144 +1,146 @@
 class AnSlider {
-    constructor({selector, indicators = true, arrows = false, initialIndex = 0, buttonColor, arrowColor}) {
-        if (!selector) {
-            console.error('Selector is empty');
-            return
-        }
-
-        this.selector = selector;
-        this.sliderElement = document.querySelector(selector);
-        this.slider = null;
-        this.slides = null;
-        this.indicators = indicators;
-        this.arrows = arrows;
-        this.buttonColor = buttonColor;
-        this.arrowColor = arrowColor;
-        this.leftArrow = null;
-        this.rightArrow = null;
-        this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        this.isTouchSupported = 'ontouchstart' in window;
-        this.activeSlideIndex = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0;
-        this.buttons = [];
-        this.init();
+  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, leftArrow, rightArrow, buttonColor, arrowColor }) {
+    if (!selector) {
+      console.error('Selector is empty')
+      return
     }
 
-    debounce(func, delay) {
-        let timeoutId;
-        return function (...args) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func(...args), delay);
+    this.selector = selector
+    this.sliderElement = document.querySelector(selector)
+    this.slider = null
+    this.slides = null
+    this.indicators = indicators
+    this.arrows = arrows
+    this.buttonColor = buttonColor
+    this.arrowColor = arrowColor
+    this.leftArrow = null
+    this.rightArrow = null
+    this.leftArrowCode =
+      leftArrow ||
+      '<svg viewBox="0 0 143 330" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>'
+    this.rightArrowCode =
+      rightArrow ||
+      '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
+    this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
+    this.isTouchSupported = 'ontouchstart' in window
+    this.activeSlideIndex = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0
+    this.buttons = []
+    this.#init()
+  }
+
+  #debounce(func, delay) {
+    let timeoutId
+    return function (...args) {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => func(...args), delay)
+    }
+  }
+
+  #handleScroll() {
+    const pos = this.slider.getBoundingClientRect()
+    const sliderWidth = this.slider.offsetWidth
+    const scrollPosition = this.slider.scrollLeft
+    const scrollWidth = this.slider.scrollWidth
+
+    if (pos) {
+      this.buttons[this.activeSlideIndex]?.classList.remove('active')
+
+      if (scrollPosition + sliderWidth >= scrollWidth) {
+        this.activeSlideIndex = this.slides.length - 1 // Last slide
+      } else if (scrollPosition <= 0) {
+        this.activeSlideIndex = 0 // First slide
+      } else {
+        // Element id in the middle of the slider
+        const elementInCenterId = document.elementsFromPoint(pos.x + pos.width / 2, pos.y + pos.height / 2).find(el => el.classList.contains('anSlide'))?.id
+
+        if (elementInCenterId) {
+          const parts = elementInCenterId.split('-')
+          this.activeSlideIndex = parseInt(parts[1])
         }
+      }
+
+      this.buttons[this.activeSlideIndex]?.classList.add('active')
+
+      if (this.arrows) {
+        this.leftArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0)
+        this.rightArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1)
+
+        this.leftArrow.ariaHidden = String(this.activeSlideIndex === 0)
+        this.rightArrow.ariaHidden = String(this.activeSlideIndex === this.slides.length - 1)
+      }
+    }
+  }
+
+  #addDragEvents() {
+    if (this.isTouchSupported) return
+
+    const self = this
+    let xDown = null
+    let yDown = null
+    let isDragging = false
+
+    function start(e) {
+      if (e.button === 0) {
+        // Only respond to left mouse button
+        xDown = e.clientX
+        yDown = e.clientY
+        isDragging = true
+      }
     }
 
-    handleScroll() {
-        const pos = this.slider.getBoundingClientRect();
-        const sliderWidth = this.slider.offsetWidth;
-        const scrollPosition = this.slider.scrollLeft;
-        const scrollWidth = this.slider.scrollWidth;
+    function swipe(e) {
+      if (isDragging && Math.abs(e.clientX - xDown) > 5) {
+        const xUp = e.clientX
+        const yUp = e.clientY
 
-        if (pos) {
-            this.buttons[this.activeSlideIndex]?.classList.remove('active');
+        if (!xDown || !yDown) return
 
-            if (scrollPosition + sliderWidth >= scrollWidth) {
-                this.activeSlideIndex = this.slides.length - 1; // Last slide
-            } else if (scrollPosition <= 0) {
-                this.activeSlideIndex = 0; // First slide
-            } else {
-                // Element id in the middle of the slider
-                const elementInCenterId = document.elementsFromPoint(pos.x + pos.width / 2, pos.y + pos.height / 2)
-                    .find((el) => el.classList.contains('anSlide'))?.id;
+        const xDiff = xDown - xUp
+        const yDiff = yDown - yUp
 
-                if (elementInCenterId) {
-                    const parts = elementInCenterId.split('-');
-                    this.activeSlideIndex = parseInt(parts[1]);
-                }
-            }
-
-            this.buttons[this.activeSlideIndex]?.classList.add('active');
-
-            if (this.arrows) {
-                this.leftArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0);
-                this.rightArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1);
-
-                this.leftArrow.ariaHidden = String(this.activeSlideIndex === 0);
-                this.rightArrow.ariaHidden = String(this.activeSlideIndex === this.slides.length - 1);
-            }
+        if (Math.abs(xDiff) > Math.abs(yDiff)) {
+          // Right swipe
+          if (xDiff > 0) {
+            self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'center',
+            })
+          }
+          // Left swipe
+          else {
+            self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'center',
+            })
+          }
         }
+
+        xDown = null
+        yDown = null
+      }
     }
 
-    addDragEvents() {
-        if (this.isTouchSupported) {
-            return;
-        }
-
-        const self = this;
-        let xDown = null;
-        let yDown = null;
-        let isDragging = false;
-
-        function start(e) {
-            if (e.button === 0) { // Only respond to left mouse button
-                xDown = e.clientX;
-                yDown = e.clientY;
-                isDragging = true;
-            }
-        }
-
-        function swipe(e) {
-            if (isDragging && Math.abs(e.clientX - xDown) > 5) {
-                const xUp = e.clientX;
-                const yUp = e.clientY;
-
-                if (!xDown || !yDown) return;
-
-                const xDiff = xDown - xUp;
-                const yDiff = yDown - yUp;
-
-                if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                    // Right swipe
-                    if (xDiff > 0) {
-                        self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'nearest',
-                            inline: 'center'
-                        });
-                    }
-                    // Left swipe
-                    else {
-                        self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'nearest',
-                            inline: 'center'
-                        });
-                    }
-                }
-
-                xDown = null;
-                yDown = null;
-            }
-        }
-
-        function end() {
-            isDragging = false;
-            xDown = null;
-            yDown = null;
-        }
-
-        this.slider.addEventListener('mousedown', start);
-        this.slider.addEventListener('mousemove', swipe);
-        this.slider.addEventListener('mouseup', end);
+    function end() {
+      isDragging = false
+      xDown = null
+      yDown = null
     }
 
-    loadStyles() {
-        const id = 'anSliderStyles';
+    this.slider.addEventListener('mousedown', start)
+    this.slider.addEventListener('mousemove', swipe)
+    this.slider.addEventListener('mouseup', end)
+  }
 
-        if (document.getElementById(id)) {
-            return
-        }
+  #loadStyles() {
+    const id = 'anSliderStyles'
 
-        const sliderStyles = document.createElement('style');
-        sliderStyles.id = id;
-        sliderStyles.textContent = `
+    if (document.getElementById(id)) return
+
+    const sliderStyles = document.createElement('style')
+    sliderStyles.id = id
+    sliderStyles.textContent = `
 .anSlider-wrapper,
 .anSlider-wrapper * {
   box-sizing: border-box
@@ -149,6 +151,7 @@ class AnSlider {
 }
 .anSlider-wrapper {
   --button-color: #000;
+  --arrow-color: #000;
 }
 .anSlide,
 .anSlider > * {
@@ -229,161 +232,159 @@ class AnSlider {
   .anSlider:hover > :not(:hover) {
     opacity: 0.5
   }
+  .anSlider-left-arrow:hover,
+  .anSlider-right-arrow:hover {
+    svg {
+      transform: scale(1.2)
+    }
+  }
 }
 .anSlider-left-arrow {
-  left: 10px;
-  background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>')
+  left: 0
 }
 .anSlider-right-arrow {
-  right: 10px;
-  background-image: url('data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>')
+  right: 0
 }
 .anSlider-left-arrow,
 .anSlider-right-arrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 14px;
-  height: 32px;
+  width: 34px;
+  height: 42px;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: transform 0.3s ease-in
+  transform: translateY(-50%);
+  svg {
+    transition: transform 0.3s ease-in
+  }
+  svg path {
+      fill: var(--arrow-color, #000)
+  }
 }
-.anSlider-left-arrow:hover,
-.anSlider-right-arrow:hover {
-  transform: translateY(-50%) scale(1.2)
-}
-`;
-        document.head.appendChild(sliderStyles);
+`
+    document.head.appendChild(sliderStyles)
+  }
+
+  #init() {
+    if (!this.sliderElement) {
+      console.error(`Element with selector ${this.selector} not found`)
+      return
     }
 
-    loadAdditionalStyles() {
-        const leftArrow = `data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path stroke="null" fill="${this.arrowColor}" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>`;
-        const rightArrow = `data:image/svg+xml,<svg width="143" height="330" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><path fill="${this.arrowColor}" d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>`;
-        const additionalStyles = document.createElement('style');
-        additionalStyles.textContent = `
-#anSlider-${this.sliderId} {
-.anSlider-left-arrow {
-background-image: url('${leftArrow}')
-}
-.anSlider-right-arrow {
-background-image: url('${rightArrow}')
-}
-}`
-        document.head.appendChild(additionalStyles);
+    const slides = this.sliderElement.children
+
+    if (slides.length < 1) {
+      console.error(`Element with selector ${this.selector} has no slides`)
+      return
     }
 
-    init() {
-        if (!this.sliderElement) {
-            console.error(`Element with selector ${this.selector} not found`);
-            return;
-        }
-
-        const slides = this.sliderElement.children;
-
-        if (slides.length < 1) {
-            console.error(`Element with selector ${this.selector} has no slides`);
-            return;
-        }
-
-        if (this.activeSlideIndex < 0 || this.activeSlideIndex > slides.length - 1) {
-            this.activeSlideIndex = 0;
-        }
-
-        this.sliderElement.classList.add('anSlider-wrapper');
-        this.sliderElement.id = `anSlider-${this.sliderId}`;
-        this.sliderElement.role = 'region';
-        this.sliderElement.ariaLive = 'polite';
-
-        const slider = document.createElement('div');
-        let sliderButtons;
-
-        slider.classList.add('anSlider');
-
-        if (this.indicators) {
-            sliderButtons = document.createElement('div');
-            sliderButtons.classList.add('anSlider-buttons');
-        }
-
-        Array.from(slides).forEach((slide, index) => {
-            const slideWrapper = document.createElement('div');
-            slideWrapper.classList.add('anSlide');
-            slideWrapper.id = `slide-${index}-${this.sliderId}`;
-            slideWrapper.appendChild(slide);
-            slider.appendChild(slideWrapper);
-
-            if (this.indicators) {
-                const button = document.createElement('div');
-                button.id = `slide-${index}-btn-${this.sliderId}`;
-                button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button';
-                button.ariaCurrent = String(index === this.activeSlideIndex);
-                button.ariaLabel = `Go to slide ${index + 1}`;
-                button.addEventListener('click', () => {
-                    const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`);
-                    slideElement.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
-                });
-                sliderButtons.appendChild(button);
-                this.buttons.push(button);
-            }
-        });
-
-        this.loadStyles();
-
-        if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
-            this.sliderElement.style.setProperty('--button-color', this.buttonColor);
-        }
-
-        if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
-            this.loadAdditionalStyles(); // TODO: check if this is needed?
-        }
-
-        this.sliderElement.appendChild(slider);
-        this.slider = this.sliderElement.querySelector('.anSlider');
-        this.slides = this.slider.querySelectorAll('.anSlide');
-
-        if (this.indicators) {
-            this.sliderElement.appendChild(sliderButtons);
-        }
-
-        if (this.arrows) {
-            this.leftArrow = document.createElement('div');
-            this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden');
-            this.leftArrow.ariaHidden = 'true';
-            this.leftArrow.ariaLabel = 'Back';
-            this.leftArrow.addEventListener('click', () => {
-                this.slides[this.activeSlideIndex - 1]?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                });
-            });
-
-            this.rightArrow = document.createElement('div');
-            this.rightArrow.classList.add('anSlider-right-arrow');
-            this.rightArrow.ariaLabel = 'Forward';
-            this.rightArrow.addEventListener('click', () => {
-                this.slides[this.activeSlideIndex + 1]?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'center'
-                });
-            });
-
-            this.sliderElement.classList.add('anSlider-with-arrows');
-            this.sliderElement.appendChild(this.leftArrow);
-            this.sliderElement.appendChild(this.rightArrow);
-        }
-
-        this.slider.addEventListener('scroll', this.debounce(this.handleScroll.bind(this), 200));
-        this.addDragEvents();
-
-        if (this.activeSlideIndex !== 0) {
-            this.slides[this.activeSlideIndex]?.scrollIntoView({
-                behavior: 'instant',
-                block: 'nearest',
-                inline: 'center'
-            });
-        }
+    if (this.activeSlideIndex < 0 || this.activeSlideIndex > slides.length - 1) {
+      this.activeSlideIndex = 0
     }
+
+    this.sliderElement.classList.add('anSlider-wrapper')
+    this.sliderElement.id = `anSlider-${this.sliderId}`
+    this.sliderElement.role = 'region'
+    this.sliderElement.ariaLive = 'polite'
+
+    const slider = document.createElement('div')
+    let sliderButtons
+
+    slider.classList.add('anSlider')
+
+    if (this.indicators) {
+      sliderButtons = document.createElement('div')
+      sliderButtons.classList.add('anSlider-buttons')
+    }
+
+    Array.from(slides).forEach((slide, index) => {
+      const slideWrapper = document.createElement('div')
+      slideWrapper.classList.add('anSlide')
+      slideWrapper.id = `slide-${index}-${this.sliderId}`
+      slideWrapper.appendChild(slide)
+      slider.appendChild(slideWrapper)
+
+      if (this.indicators) {
+        const button = document.createElement('div')
+        button.id = `slide-${index}-btn-${this.sliderId}`
+        button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button'
+        button.ariaCurrent = String(index === this.activeSlideIndex)
+        button.ariaLabel = `Go to slide ${index + 1}`
+        button.addEventListener('click', () => {
+          const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`)
+          slideElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center',
+          })
+        })
+        sliderButtons.appendChild(button)
+        this.buttons.push(button)
+      }
+    })
+
+    this.#loadStyles()
+
+    if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
+      this.sliderElement.style.setProperty('--button-color', this.buttonColor)
+    }
+
+    if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
+      this.sliderElement.style.setProperty('--arrow-color', this.arrowColor)
+    }
+
+    this.sliderElement.appendChild(slider)
+    this.slider = this.sliderElement.querySelector('.anSlider')
+    this.slides = this.slider.querySelectorAll('.anSlide')
+
+    if (this.indicators) {
+      this.sliderElement.appendChild(sliderButtons)
+    }
+
+    if (this.arrows) {
+      this.leftArrow = document.createElement('div')
+      this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden')
+      this.leftArrow.ariaHidden = 'true'
+      this.leftArrow.ariaLabel = 'Back'
+      this.leftArrow.innerHTML = this.leftArrowCode
+      this.leftArrow.addEventListener('click', () => {
+        this.slides[this.activeSlideIndex - 1]?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        })
+      })
+
+      this.rightArrow = document.createElement('div')
+      this.rightArrow.classList.add('anSlider-right-arrow')
+      this.rightArrow.ariaLabel = 'Forward'
+      this.rightArrow.innerHTML = this.rightArrowCode
+      this.rightArrow.addEventListener('click', () => {
+        this.slides[this.activeSlideIndex + 1]?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        })
+      })
+
+      this.sliderElement.classList.add('anSlider-with-arrows')
+      this.sliderElement.appendChild(this.leftArrow)
+      this.sliderElement.appendChild(this.rightArrow)
+    }
+
+    this.slider.addEventListener('scroll', this.#debounce(this.#handleScroll.bind(this), 200))
+    this.#addDragEvents()
+
+    if (this.activeSlideIndex !== 0) {
+      this.slides[this.activeSlideIndex]?.scrollIntoView({
+        behavior: 'instant',
+        block: 'nearest',
+        inline: 'center',
+      })
+    }
+  }
+
+  destroy() {
+    this.sliderElement.remove()
+  }
 }
