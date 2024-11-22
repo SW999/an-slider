@@ -257,6 +257,34 @@ class AnSlider {
     document.head.appendChild(sliderStyles)
   }
 
+  #createButton(index, sliderButtons) {
+    const button = document.createElement('div')
+    button.id = `slide-${index}-btn-${this.sliderId}`
+    button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button'
+    button.ariaCurrent = String(index === this.activeSlideIndex)
+    button.ariaLabel = `Go to slide ${index + 1}`
+    button.addEventListener('click', () => this.goTo(index))
+    sliderButtons.appendChild(button)
+    this.buttons.push(button)
+  }
+
+  #createArrows() {
+    this.leftArrow = document.createElement('div')
+    this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden')
+    this.leftArrow.ariaHidden = 'true'
+    this.leftArrow.ariaLabel = 'Back'
+    this.leftArrow.innerHTML = this.leftArrowCode
+    this.leftArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex - 1))
+
+    this.rightArrow = document.createElement('div')
+    this.rightArrow.classList.add('anSlider-right-arrow')
+    this.rightArrow.ariaLabel = 'Forward'
+    this.rightArrow.innerHTML = this.rightArrowCode
+    this.rightArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex + 1))
+
+    this.sliderElement.classList.add('anSlider-with-arrows')
+  }
+
   #init() {
     if (!this.sliderElement) {
       console.error(`Element with selector ${this.selector} not found`)
@@ -264,6 +292,7 @@ class AnSlider {
     }
 
     const slides = this.sliderElement.children
+    const fragment = document.createDocumentFragment()
 
     if (slides.length < 1) {
       console.error(`Element with selector ${this.selector} has no slides`)
@@ -297,53 +326,34 @@ class AnSlider {
       slider.appendChild(slideWrapper)
 
       if (this.indicators) {
-        const button = document.createElement('div')
-        button.id = `slide-${index}-btn-${this.sliderId}`
-        button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button'
-        button.ariaCurrent = String(index === this.activeSlideIndex)
-        button.ariaLabel = `Go to slide ${index + 1}`
-        button.addEventListener('click', () => this.goTo(index))
-        sliderButtons.appendChild(button)
-        this.buttons.push(button)
+        this.#createButton(index, sliderButtons)
       }
     })
 
-    this.#loadStyles()
-
-    if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
-      this.sliderElement.style.setProperty('--button-color', this.buttonColor)
-    }
-
-    if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
-      this.sliderElement.style.setProperty('--arrow-color', this.arrowColor)
-    }
-
-    this.sliderElement.appendChild(slider)
-    this.slider = this.sliderElement.querySelector('.anSlider')
-    this.slides = this.slider.querySelectorAll('.anSlide')
+    fragment.appendChild(slider)
 
     if (this.indicators) {
-      this.sliderElement.appendChild(sliderButtons)
+      fragment.appendChild(sliderButtons)
+
+      if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
+        this.sliderElement.style.setProperty('--button-color', this.buttonColor)
+      }
     }
 
     if (this.arrows) {
-      this.leftArrow = document.createElement('div')
-      this.leftArrow.classList.add('anSlider-left-arrow', 'anSlider-hidden')
-      this.leftArrow.ariaHidden = 'true'
-      this.leftArrow.ariaLabel = 'Back'
-      this.leftArrow.innerHTML = this.leftArrowCode
-      this.leftArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex - 1))
+      this.#createArrows()
+      fragment.appendChild(this.leftArrow)
+      fragment.appendChild(this.rightArrow)
 
-      this.rightArrow = document.createElement('div')
-      this.rightArrow.classList.add('anSlider-right-arrow')
-      this.rightArrow.ariaLabel = 'Forward'
-      this.rightArrow.innerHTML = this.rightArrowCode
-      this.rightArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex + 1))
-
-      this.sliderElement.classList.add('anSlider-with-arrows')
-      this.sliderElement.appendChild(this.leftArrow)
-      this.sliderElement.appendChild(this.rightArrow)
+      if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
+        this.sliderElement.style.setProperty('--arrow-color', this.arrowColor)
+      }
     }
+
+    this.#loadStyles()
+    this.sliderElement.appendChild(fragment)
+    this.slider = this.sliderElement.querySelector('.anSlider')
+    this.slides = this.slider.querySelectorAll('.anSlide')
 
     this.slider.addEventListener('scroll', this.#debounce(this.#handleScroll.bind(this), 200))
     this.#addDragEvents()
@@ -358,10 +368,22 @@ class AnSlider {
   }
 
   goTo(index, smooth = true) {
+    if (index < 0 || index > this.slides.length - 1) {
+      return
+    }
+
     this.slides[index]?.scrollIntoView({
       behavior: smooth ? 'smooth' : 'instant',
       block: 'nearest',
       inline: 'center',
     })
+  }
+
+  next() {
+    this.goTo(this.activeSlideIndex + 1)
+  }
+
+  prev() {
+    this.goTo(this.activeSlideIndex - 1)
   }
 }

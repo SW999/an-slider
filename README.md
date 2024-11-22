@@ -77,7 +77,7 @@ MIT License
 > - [ ] Add variant with previews (horizontal and vertical)
 > - [ ] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
 > - [ ] Add `slideChange` - custom event. Fired when the active slide changes
-> - [ ] Add methods `next`, `prev`, `goTo`, `destroy`
+> - [x] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
 > - [x] Add `initialIndex` option
 > - [ ] Find a way to minify the size of the library dramatically
