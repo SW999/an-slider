@@ -6,7 +6,7 @@ An(other) js slider. A lightweight and customizable slider component made with p
 **Features**
 ------------
 
-* **Touch-friendly**: Supports touch events
+* **Touch-friendly**: Supports touch events on mobile and desktop
 * **Keyboard navigation**: Allows navigation using keyboard arrows
 * **Customizable**: Easily customize the slider's appearance and behavior
 * **No dependencies**: Made with pure JavaScript, without any libraries or frameworks

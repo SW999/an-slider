@@ -101,19 +101,11 @@ class AnSlider {
         if (Math.abs(xDiff) > Math.abs(yDiff)) {
           // Right swipe
           if (xDiff > 0) {
-            self.slides[self.activeSlideIndex + 1]?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'nearest',
-              inline: 'center',
-            })
+            self.goTo(self.activeSlideIndex + 1)
           }
           // Left swipe
           else {
-            self.slides[self.activeSlideIndex - 1]?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'nearest',
-              inline: 'center',
-            })
+            self.goTo(self.activeSlideIndex - 1)
           }
         }
 
@@ -310,14 +302,7 @@ class AnSlider {
         button.className = index === this.activeSlideIndex ? 'anSlider-button active' : 'anSlider-button'
         button.ariaCurrent = String(index === this.activeSlideIndex)
         button.ariaLabel = `Go to slide ${index + 1}`
-        button.addEventListener('click', () => {
-          const slideElement = document.getElementById(`slide-${index}-${this.sliderId}`)
-          slideElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center',
-          })
-        })
+        button.addEventListener('click', () => this.goTo(index))
         sliderButtons.appendChild(button)
         this.buttons.push(button)
       }
@@ -347,25 +332,13 @@ class AnSlider {
       this.leftArrow.ariaHidden = 'true'
       this.leftArrow.ariaLabel = 'Back'
       this.leftArrow.innerHTML = this.leftArrowCode
-      this.leftArrow.addEventListener('click', () => {
-        this.slides[this.activeSlideIndex - 1]?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
-        })
-      })
+      this.leftArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex - 1))
 
       this.rightArrow = document.createElement('div')
       this.rightArrow.classList.add('anSlider-right-arrow')
       this.rightArrow.ariaLabel = 'Forward'
       this.rightArrow.innerHTML = this.rightArrowCode
-      this.rightArrow.addEventListener('click', () => {
-        this.slides[this.activeSlideIndex + 1]?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
-        })
-      })
+      this.rightArrow.addEventListener('click', () => this.goTo(this.activeSlideIndex + 1))
 
       this.sliderElement.classList.add('anSlider-with-arrows')
       this.sliderElement.appendChild(this.leftArrow)
@@ -376,15 +349,19 @@ class AnSlider {
     this.#addDragEvents()
 
     if (this.activeSlideIndex !== 0) {
-      this.slides[this.activeSlideIndex]?.scrollIntoView({
-        behavior: 'instant',
-        block: 'nearest',
-        inline: 'center',
-      })
+      this.goTo(this.activeSlideIndex, false)
     }
   }
 
   destroy() {
     this.sliderElement.remove()
+  }
+
+  goTo(index, smooth = true) {
+    this.slides[index]?.scrollIntoView({
+      behavior: smooth ? 'smooth' : 'instant',
+      block: 'nearest',
+      inline: 'center',
+    })
   }
 }
