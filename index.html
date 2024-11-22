@@ -96,6 +96,10 @@
             slider2.next();
         });
 
+        slider3.sliderElement.addEventListener('slideChange', (e) => {
+            console.log("Slider 3: current index is '" + e.detail.currentIndex + "', total slides - " + e.detail.totalSlides);
+        })
+
         console.log(Object.getOwnPropertyNames(slider1));
         console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(slider1)));
     })

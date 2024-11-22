@@ -28,6 +28,15 @@ class AnSlider {
     this.#init()
   }
 
+  #createSlideChangeEvent() {
+    return new CustomEvent('slideChange', {
+      detail: {
+        currentIndex: this.activeSlideIndex,
+        totalSlides: this.slides.length,
+      },
+    })
+  }
+
   #debounce(func, delay) {
     let timeoutId
     return function (...args) {
@@ -37,7 +46,7 @@ class AnSlider {
   }
 
   #handleScroll() {
-    const pos = this.slider.getBoundingClientRect()
+    const pos = this.slider.getBoundingClientRect() // TODO: do we really need this?
     const sliderWidth = this.slider.offsetWidth
     const scrollPosition = this.slider.scrollLeft
     const scrollWidth = this.slider.scrollWidth
@@ -58,6 +67,8 @@ class AnSlider {
           this.activeSlideIndex = parseInt(parts[1])
         }
       }
+
+      this.sliderElement.dispatchEvent(this.#createSlideChangeEvent())
 
       this.buttons[this.activeSlideIndex]?.classList.add('active')
 
