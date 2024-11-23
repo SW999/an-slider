@@ -37,51 +37,6 @@ class AnSlider {
     })
   }
 
-  #debounce(func, delay) {
-    let timeoutId
-    return function (...args) {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => func(...args), delay)
-    }
-  }
-
-  #handleScroll() {
-    const pos = this.slider.getBoundingClientRect() // TODO: do we really need this?
-    const sliderWidth = this.slider.offsetWidth
-    const scrollPosition = this.slider.scrollLeft
-    const scrollWidth = this.slider.scrollWidth
-
-    if (pos) {
-      this.buttons[this.activeSlideIndex]?.classList.remove('active')
-
-      if (scrollPosition + sliderWidth >= scrollWidth) {
-        this.activeSlideIndex = this.slides.length - 1 // Last slide
-      } else if (scrollPosition <= 0) {
-        this.activeSlideIndex = 0 // First slide
-      } else {
-        // Element id in the middle of the slider
-        const elementInCenterId = document.elementsFromPoint(pos.x + pos.width / 2, pos.y + pos.height / 2).find(el => el.classList.contains('anSlide'))?.id
-
-        if (elementInCenterId) {
-          const parts = elementInCenterId.split('-')
-          this.activeSlideIndex = parseInt(parts[1])
-        }
-      }
-
-      this.sliderElement.dispatchEvent(this.#createSlideChangeEvent())
-
-      this.buttons[this.activeSlideIndex]?.classList.add('active')
-
-      if (this.arrows) {
-        this.leftArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === 0)
-        this.rightArrow.classList.toggle('anSlider-hidden', this.activeSlideIndex === this.slides.length - 1)
-
-        this.leftArrow.ariaHidden = String(this.activeSlideIndex === 0)
-        this.rightArrow.ariaHidden = String(this.activeSlideIndex === this.slides.length - 1)
-      }
-    }
-  }
-
   #addDragEvents() {
     if (this.isTouchSupported) return
 
@@ -154,11 +109,11 @@ class AnSlider {
 }
 .anSlider-wrapper {
   --button-color: #000;
-  --arrow-color: #000;
+  --arrow-color: #000
 }
-.anSlide,
-.anSlider > * {
-  scroll-snap-align: center
+.anSlide {
+  scroll-snap-align: center;
+  scroll-snap-stop: always
 }
 .anSlider-with-arrows {
   position: relative
@@ -166,14 +121,14 @@ class AnSlider {
 .anSlider-hidden {
   display:none
 }
-.anSlide > img {
-  height: auto;
+.anSlide > img,
+.anSlide > video { 
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   vertical-align: bottom;
   transition: opacity 0.3s ease-in-out;
-  opacity: inherit;
-  pointer-events: none;
-  user-select: none
+  opacity: inherit
 }
 .anSlide {
   display: flex;
@@ -189,14 +144,15 @@ class AnSlider {
   }
 }
 .anSlider {
-  overflow: scroll hidden;
   display: flex;
   flex-flow: row nowrap;
   gap: 35px;
+  visibility: hidden;
   scroll-snap-type: x mandatory;
+  overflow: scroll hidden;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  cursor: grab;
-  visibility: hidden
+  cursor: grab
 }
 .anSlider::-webkit-scrollbar {
   display: none
@@ -304,6 +260,7 @@ class AnSlider {
 
     const slides = this.sliderElement.children
     const fragment = document.createDocumentFragment()
+    const self = this
 
     if (slides.length < 1) {
       console.error(`Element with selector ${this.selector} has no slides`)
@@ -321,6 +278,7 @@ class AnSlider {
 
     const slider = document.createElement('div')
     let sliderButtons
+    const _slides = []
 
     slider.classList.add('anSlider')
 
@@ -335,6 +293,7 @@ class AnSlider {
       slideWrapper.id = `slide-${index}-${this.sliderId}`
       slideWrapper.appendChild(slide)
       slider.appendChild(slideWrapper)
+      _slides.push(slideWrapper)
 
       if (this.indicators) {
         this.#createButton(index, sliderButtons)
@@ -363,15 +322,39 @@ class AnSlider {
 
     this.#loadStyles()
     this.sliderElement.appendChild(fragment)
-    this.slider = this.sliderElement.querySelector('.anSlider')
-    this.slides = this.slider.querySelectorAll('.anSlide')
+    this.slider = slider
+    this.slides = _slides
 
-    this.slider.addEventListener('scroll', this.#debounce(this.#handleScroll.bind(this), 200))
-    this.#addDragEvents()
+    this.slider.addEventListener('scrollsnapchanging', e => {
+      const id = e.snapTargetInline.id
+      const index = parseInt(id.split('-')[1], 10)
+
+      if (self.indicators) {
+        const prevActiveBtn = sliderButtons?.querySelector('.active')
+        prevActiveBtn?.classList.remove('active')
+        prevActiveBtn?.setAttribute('aria-current', false)
+
+        const activeBtn = self.buttons[index]
+        activeBtn?.classList.add('active')
+        activeBtn?.setAttribute('aria-current', true)
+      }
+
+      if (self.arrows) {
+        self.leftArrow.classList.toggle('anSlider-hidden', index === 0)
+        self.rightArrow.classList.toggle('anSlider-hidden', index === self.slides.length - 1)
+
+        self.leftArrow.ariaHidden = String(index === 0)
+        self.rightArrow.ariaHidden = String(index === self.slides.length - 1)
+      }
+
+      self.sliderElement.dispatchEvent(self.#createSlideChangeEvent())
+    })
 
     if (this.activeSlideIndex !== 0) {
       this.goTo(this.activeSlideIndex, false)
     }
+
+    this.#addDragEvents()
   }
 
   destroy() {
@@ -383,6 +366,7 @@ class AnSlider {
       return
     }
 
+    this.activeSlideIndex = index
     this.slides[index]?.scrollIntoView({
       behavior: smooth ? 'smooth' : 'instant',
       block: 'nearest',
