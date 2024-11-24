@@ -75,7 +75,7 @@ MIT License
 > ## TODO:
 > - [ ] Add set of default slide sizes and support for custom size
 > - [ ] Add variant with previews (horizontal and vertical)
-> - [ ] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
+> - [x] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
 > - [x] Add `slideChange` - custom event. Fired when the active slide changes
 > - [x] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
