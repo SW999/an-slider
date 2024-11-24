@@ -1,7 +1,7 @@
 **An-Slider**
 ================
 
-An(other) js slider. A lightweight and customizable slider component made with pure JavaScript, without any dependencies.
+An(other) js slider. A lightweight and customizable gallery component made via pure JavaScript, without dependencies.
 
 **Features**
 ------------
