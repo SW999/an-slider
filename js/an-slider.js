@@ -97,7 +97,127 @@ class AnSlider {
     const sliderStyles = document.createElement('style')
     sliderStyles.id = id
     sliderStyles.textContent = `
-.anSlider-wrapper,.anSlider-wrapper *{box-sizing:border-box}.anSlide>img,.anSlider-wrapper{max-width:100%}.anSlider-wrapper{--button-color:#000;--arrow-color:#000;position:relative;[aria-hidden="true"]{display:none}}.anSlide{scroll-snap-align:center;scroll-snap-stop:always}.anSlide>img,.anSlide>video{width:100%;height:100%;object-fit:cover;vertical-align:bottom;transition:opacity .3s ease-in-out;opacity:inherit;user-select:none}.anSlide{display:flex;justify-content:center;align-items:center;flex:0 0 calc(100vw - 16px);visibility:visible;transition:opacity .3s ease-in-out}@media(min-width:466px){.anSlide{flex:0 0 450px}}.anSlider{display:flex;flex-flow:row nowrap;gap:35px;visibility:hidden;scroll-snap-type:x mandatory;overflow:scroll hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;cursor:grab}.anSlider::-webkit-scrollbar{display:none}.anSlider-btns{margin-top:10px;display:flex;justify-content:center;gap:7px}.anSlider-btn{width:15px;height:15px;border:1px solid var(--button-color,#000);border-radius:100%;transform:scale(1);transition:transform .3s ease-out,background-color .3s ease-out}.anSlider-btn[aria-current="true"]{margin:0 2px;background-color:var(--button-color,#000);cursor:default;pointer-events:none;transform:scale(1.5);transition:transform .3s ease-in,background-color .3s ease-in}@media(hover:hover){.anSlider-btn{width:10px;height:10px;cursor:pointer}.anSlider-btns{gap:4px}.anSlider:hover>:not(:hover){opacity:.5}.anSlider-left-arrow:hover,.anSlider-right-arrow:hover{svg{transform:scale(1.2)}}}.anSlider-left-arrow{left:0}.anSlider-right-arrow{right:0}.anSlider-left-arrow,.anSlider-right-arrow{position:absolute;top:50%;width:34px;height:42px;padding:5px 10px;cursor:pointer;transform:translateY(-50%);svg{transition:transform .3s ease-in}svg path{fill:var(--arrow-color,#000)}}
+.anSlider-wrapper,
+.anSlider-wrapper * {
+  box-sizing: border-box
+}
+.anSlide > img,
+.anSlider-wrapper {
+  max-width: 100%
+}
+.anSlider-wrapper {
+  --button-color: #000;
+  --arrow-color: #000;
+  position: relative;
+
+  [aria-hidden="true"] {
+    display: none
+  }
+}
+.anSlide {
+  scroll-snap-align: center;
+  scroll-snap-stop: always
+}
+.anSlide > img,
+.anSlide > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  vertical-align: bottom;
+  transition: opacity .3s ease-in-out;
+  opacity: inherit;
+  user-select: none
+}
+.anSlide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 calc(100vw - 16px);
+  visibility: visible;
+  transition: opacity .3s ease-in-out
+}
+@media (min-width: 466px) {
+  .anSlide {
+    flex: 0 0 450px
+  }
+}
+.anSlider {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 35px;
+  visibility: hidden;
+  scroll-snap-type: x mandatory;
+  overflow: scroll hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab
+}
+.anSlider::-webkit-scrollbar {
+  display: none
+}
+.anSlider-btns {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 7px
+}
+.anSlider-btn {
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--button-color, #000);
+  border-radius: 100%;
+  transform: scale(1);
+  transition: transform .3s ease-out, background-color .3s ease-out
+}
+.anSlider-btn[aria-current="true"] {
+  margin: 0 2px;
+  background-color: var(--button-color, #000);
+  cursor: default;
+  pointer-events: none;
+  transform: scale(1.5);
+  transition: transform .3s ease-in, background-color .3s ease-in
+}
+@media (hover: hover) {
+  .anSlider-btn {
+    width: 10px;
+    height: 10px;
+    cursor: pointer
+  }
+  .anSlider-btns {
+    gap: 4px
+  }
+  .anSlider:hover > :not(:hover) {
+    opacity: .5
+  }
+  .anSlider-left-arrow:hover,
+  .anSlider-right-arrow:hover {
+    svg {
+      transform: scale(1.2)
+    }
+  }
+}
+.anSlider-left-arrow {
+  left: 0
+}
+.anSlider-right-arrow {
+  right: 0
+}
+.anSlider-left-arrow,
+.anSlider-right-arrow {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 42px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  svg {
+    transition: transform .3s ease-in
+  }
+  svg path {
+    fill: var(--arrow-color, #000)
+  }
+}
 `
     document.head.appendChild(sliderStyles)
   }

@@ -79,7 +79,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, buttonColor: 'orange'});
         const slider2 = new AnSlider({selector: '.slider2', indicators: false});
-        const slider3 = new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
+        new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
 
         const remove = document.getElementById('removeSlider');
         remove.addEventListener('click', () => {
