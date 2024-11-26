@@ -11,14 +11,14 @@ class AnSlider {
     this.slides = null
     this.indicators = indicators
     this.arrows = arrows
-    this.btnColor = buttonColor
-    this.arrColor = arrowColor
-    this.leftArr = null
-    this.rightArr = null
-    this.leftArrCode =
+    this.buttonColor = buttonColor
+    this.arrowColor = arrowColor
+    this.leftArrow = null
+    this.rightArrow = null
+    this.leftArrowCode =
       leftArrow ||
       '<svg viewBox="0 0 143 330" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>'
-    this.rightArrCode =
+    this.rightArrowCode =
       rightArrow ||
       '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
@@ -27,7 +27,7 @@ class AnSlider {
     this.#init()
   }
 
-  #addCustomEvt(name) {
+  #createCustomEvent(name) {
     return new CustomEvent(name, {
       detail: {
         currentIndex: this.active,
@@ -62,15 +62,8 @@ class AnSlider {
         const xDiff = xDown - xUp
         const yDiff = yDown - yUp
 
-        if (Math.abs(xDiff) > Math.abs(yDiff)) {
-          // Right swipe
-          if (xDiff > 0) {
-            this.goTo(this.active + 1)
-          }
-          // Left swipe
-          else {
-            this.goTo(this.active - 1)
-          }
+        if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff !== 0) {
+          this.goTo(this.active + (xDiff > 0 ? 1 : -1))
         }
 
         xDown = null
@@ -155,7 +148,7 @@ class AnSlider {
 .anSlider::-webkit-scrollbar {
   display: none
 }
-.anSlider-btns {
+.anSlider-indicators {
   margin-top: 10px;
   display: flex;
   justify-content: center;
@@ -183,7 +176,7 @@ class AnSlider {
     height: 10px;
     cursor: pointer
   }
-  .anSlider-btns {
+  .anSlider-indicators {
     gap: 4px
   }
   .anSlider:hover > :not(:hover) {
@@ -222,44 +215,46 @@ class AnSlider {
     document.head.appendChild(sliderStyles)
   }
 
-  #addBtn(i, btns) {
-    const btn = document.createElement('div')
-    btn.id = `slide-${i}-btn-${this.sliderId}`
-    btn.className = 'anSlider-btn'
-    btn.ariaCurrent = String(i === this.active)
-    btn.ariaLabel = `Go to slide ${i + 1}`
-    btn.addEventListener('click', () => this.goTo(i))
-    btns.appendChild(btn)
-    this.buttons.push(btn)
+  #createIndicator(i, indicatorsWrapper) {
+    const indicator = document.createElement('div')
+    indicator.id = `slide-${i}-btn-${this.sliderId}`
+    indicator.className = 'anSlider-btn'
+    indicator.ariaCurrent = String(i === this.active)
+    indicator.ariaLabel = `Go to slide ${i + 1}`
+    indicator.addEventListener('click', () => this.goTo(i))
+    indicatorsWrapper.appendChild(indicator)
+    this.buttons.push(indicator)
   }
 
   #addArrows() {
-    this.leftArr = document.createElement('div')
-    this.leftArr.className = 'anSlider-left-arrow'
-    this.leftArr.ariaHidden = 'true'
-    this.leftArr.ariaLabel = 'Back'
-    this.leftArr.innerHTML = this.leftArrCode
-    this.leftArr.addEventListener('click', () => this.goTo(this.active - 1))
+    this.leftArrow = document.createElement('div')
+    this.leftArrow.className = 'anSlider-left-arrow'
+    this.leftArrow.ariaHidden = 'true'
+    this.leftArrow.ariaLabel = 'Back'
+    this.leftArrow.innerHTML = this.leftArrowCode
+    this.leftArrow.addEventListener('click', () => this.goTo(this.active - 1))
 
-    this.rightArr = document.createElement('div')
-    this.rightArr.classList.add('anSlider-right-arrow')
-    this.rightArr.ariaLabel = 'Forward'
-    this.rightArr.innerHTML = this.rightArrCode
-    this.rightArr.addEventListener('click', () => this.goTo(this.active + 1))
+    this.rightArrow = document.createElement('div')
+    this.rightArrow.classList.add('anSlider-right-arrow')
+    this.rightArrow.ariaLabel = 'Forward'
+    this.rightArrow.innerHTML = this.rightArrowCode
+    this.rightArrow.addEventListener('click', () => this.goTo(this.active + 1))
   }
 
   #init() {
-    const slides = this.wrapper.children
+    const content = this.wrapper.children
+    let indicatorsWrapper
+    const slides = []
 
-    if (slides.length < 1) {
-      console.error('Selector has no slides')
+    if (content.length < 1) {
+      console.error('Selector has no content to create slides')
       return
     }
 
     const fragment = document.createDocumentFragment()
     const self = this
 
-    if (this.active < 0 || this.active > slides.length - 1) {
+    if (this.active < 0 || this.active > content.length - 1) {
       this.active = 0
     }
 
@@ -269,72 +264,70 @@ class AnSlider {
     this.wrapper.ariaLive = 'polite'
 
     const slider = document.createElement('div')
-    let btns
-    const _slides = []
 
-    slider.classList.add('anSlider')
+    slider.className = 'anSlider'
 
     if (this.indicators) {
-      btns = document.createElement('div')
-      btns.classList.add('anSlider-btns')
+      indicatorsWrapper = document.createElement('div')
+      indicatorsWrapper.className = 'anSlider-indicators'
     }
 
-    Array.from(slides).forEach((_slide, index) => {
+    Array.from(content).forEach((item, index) => {
       const slide = document.createElement('div')
-      slide.classList.add('anSlide')
+      slide.className = 'anSlide'
       slide.id = `slide-${index}-${this.sliderId}`
-      slide.appendChild(_slide)
+      slide.appendChild(item)
       slider.appendChild(slide)
-      _slides.push(slide)
+      slides.push(slide)
 
       if (this.indicators) {
-        this.#addBtn(index, btns)
+        this.#createIndicator(index, indicatorsWrapper)
       }
     })
 
     fragment.appendChild(slider)
 
     if (this.indicators) {
-      fragment.appendChild(btns)
+      fragment.appendChild(indicatorsWrapper)
 
-      if (this.btnColor && CSS.supports('color', this.btnColor)) {
-        this.wrapper.style.setProperty('--button-color', this.btnColor)
+      if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
+        this.wrapper.style.setProperty('--button-color', this.buttonColor)
       }
     }
 
     if (this.arrows) {
       this.#addArrows()
-      fragment.appendChild(this.leftArr)
-      fragment.appendChild(this.rightArr)
+      fragment.appendChild(this.leftArrow)
+      fragment.appendChild(this.rightArrow)
 
-      if (this.arrColor && CSS.supports('color', this.arrColor)) {
-        this.wrapper.style.setProperty('--arrow-color', this.arrColor)
+      if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
+        this.wrapper.style.setProperty('--arrow-color', this.arrowColor)
       }
     }
 
     this.#addStyles()
     this.wrapper.appendChild(fragment)
     this.slider = slider
-    this.slides = _slides
+    this.slides = slides
 
     this.slider.addEventListener('scrollsnapchanging', e => {
       const id = e.snapTargetInline.id
       const index = parseInt(id.split('-')[1], 10)
 
       if (self.indicators) {
-        btns?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
+        indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
         self.buttons[index]?.setAttribute('aria-current', true)
       }
 
       if (self.arrows) {
-        self.leftArr.ariaHidden = String(index === 0)
-        self.rightArr.ariaHidden = String(index === self.slides.length - 1)
+        self.leftArrow.ariaHidden = String(index === 0)
+        self.rightArrow.ariaHidden = String(index === self.slides.length - 1)
       }
 
-      self.wrapper.dispatchEvent(self.#addCustomEvt('slideChange'))
+      self.wrapper.dispatchEvent(self.#createCustomEvent('slideChange'))
     })
 
-    this.slider.addEventListener('scrollsnapchange', _ => self.wrapper.dispatchEvent(self.#addCustomEvt('slideTransitionEnd')))
+    this.slider.addEventListener('scrollsnapchange', _ => self.wrapper.dispatchEvent(self.#createCustomEvent('slideTransitionEnd')))
 
     if (this.active !== 0) {
       this.goTo(this.active, false)
