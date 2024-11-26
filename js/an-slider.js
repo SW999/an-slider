@@ -1,5 +1,5 @@
 class AnSlider {
-  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, leftArrow, rightArrow, buttonColor, arrowColor }) {
+  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, leftArrow, rightArrow, indicatorColor, arrowColor }) {
     this.wrapper = document.querySelector(selector)
 
     if (!selector || !this.wrapper) {
@@ -8,30 +8,42 @@ class AnSlider {
     }
 
     this.slider = null
-    this.slides = null
-    this.indicators = indicators
-    this.arrows = arrows
-    this.buttonColor = buttonColor
-    this.arrowColor = arrowColor
+    this.slidesCount = 0
+    this.indicators = 'boolean' === typeof indicators ? indicators : true
+    this.arrows = 'boolean' === typeof arrows ? arrows : false
+    this.indicatorColor = CSS.supports('color', indicatorColor) ? indicatorColor : undefined
+    this.arrowColor = CSS.supports('color', arrowColor) ? arrowColor : undefined
     this.leftArrow = null
     this.rightArrow = null
-    this.leftArrowCode =
-      leftArrow ||
-      '<svg viewBox="0 0 143 330" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>'
-    this.rightArrowCode =
-      rightArrow ||
-      '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
+    this.leftArrowCode = this.#isValidSVG(leftArrow?.trim())
+      ? leftArrow
+      : '<svg viewBox="0 0 143 330" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>'
+    this.rightArrowCode = this.#isValidSVG(rightArrow?.trim())
+      ? rightArrow
+      : '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
     this.active = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0
-    this.buttons = []
+    this.indicatorsWrapper = null
     this.#init()
+  }
+
+  #isValidSVG(str) {
+    if (!this.arrows) return false
+
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(str, 'image/svg+xml')
+      return doc.documentElement.nodeName === 'svg' && !doc.querySelector('parsererror')
+    } catch {
+      return false
+    }
   }
 
   #createCustomEvent(name) {
     return new CustomEvent(name, {
       detail: {
         currentIndex: this.active,
-        totalSlides: this.slides.length,
+        totalSlides: this.slidesCount,
       },
     })
   }
@@ -99,7 +111,7 @@ class AnSlider {
   max-width: 100%
 }
 .anSlider-wrapper {
-  --button-color: #000;
+  --indicator-color: #000;
   --arrow-color: #000;
   position: relative;
 
@@ -154,24 +166,24 @@ class AnSlider {
   justify-content: center;
   gap: 7px
 }
-.anSlider-btn {
+.anSlider-indicator {
   width: 15px;
   height: 15px;
-  border: 1px solid var(--button-color, #000);
+  border: 1px solid var(--indicator-color, #000);
   border-radius: 100%;
   transform: scale(1);
   transition: transform .3s ease-out, background-color .3s ease-out
 }
-.anSlider-btn[aria-current="true"] {
+.anSlider-indicator[aria-current="true"] {
   margin: 0 2px;
-  background-color: var(--button-color, #000);
+  background-color: var(--indicator-color, #000);
   cursor: default;
   pointer-events: none;
   transform: scale(1.5);
   transition: transform .3s ease-in, background-color .3s ease-in
 }
 @media (hover: hover) {
-  .anSlider-btn {
+  .anSlider-indicator {
     width: 10px;
     height: 10px;
     cursor: pointer
@@ -210,20 +222,19 @@ class AnSlider {
   svg path {
     fill: var(--arrow-color, #000)
   }
-}
-`
+}`
     document.head.appendChild(sliderStyles)
   }
 
-  #createIndicator(i, indicatorsWrapper) {
+  #createIndicator(i) {
     const indicator = document.createElement('div')
-    indicator.id = `slide-${i}-btn-${this.sliderId}`
-    indicator.className = 'anSlider-btn'
+
+    indicator.id = `slide-${i}-indicator-${this.sliderId}`
+    indicator.className = 'anSlider-indicator'
     indicator.ariaCurrent = String(i === this.active)
     indicator.ariaLabel = `Go to slide ${i + 1}`
     indicator.addEventListener('click', () => this.goTo(i))
-    indicatorsWrapper.appendChild(indicator)
-    this.buttons.push(indicator)
+    this.indicatorsWrapper.appendChild(indicator)
   }
 
   #addArrows() {
@@ -241,10 +252,44 @@ class AnSlider {
     this.rightArrow.addEventListener('click', () => this.goTo(this.active + 1))
   }
 
+  #addIndicators() {
+    this.indicatorsWrapper = document.createElement('div')
+    this.indicatorsWrapper.className = 'anSlider-indicators'
+
+    Array.from({ length: this.slidesCount }).forEach((_, index) => this.#createIndicator(index))
+  }
+
+  #addEventListeners() {
+    this.slider.addEventListener('scrollsnapchanging', e => {
+      const id = e.snapTargetInline.id
+      const index = parseInt(id.split('-')[1], 10)
+
+      if (this.indicators) {
+        this.indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
+        this.indicatorsWrapper?.querySelectorAll('.anSlider-indicator')[index]?.setAttribute('aria-current', true)
+      }
+
+      if (this.arrows) {
+        this.leftArrow.ariaHidden = String(index === 0)
+        this.rightArrow.ariaHidden = String(index === this.slidesCount - 1)
+      }
+
+      this.wrapper.dispatchEvent(this.#createCustomEvent('slideChange'))
+    })
+
+    this.slider.addEventListener('scrollsnapchange', _ => this.wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd')))
+  }
+
+  #createSlide(item, index) {
+    const slide = document.createElement('div')
+    slide.className = 'anSlide'
+    slide.id = `slide-${index}-${this.sliderId}`
+    slide.appendChild(item)
+    this.slider.appendChild(slide)
+  }
+
   #init() {
-    const content = this.wrapper.children
-    let indicatorsWrapper
-    const slides = []
+    const content = this.wrapper.childElementCount ? Array.from(this.wrapper.children) : []
 
     if (content.length < 1) {
       console.error('Selector has no content to create slides')
@@ -252,9 +297,9 @@ class AnSlider {
     }
 
     const fragment = document.createDocumentFragment()
-    const self = this
+    this.slidesCount = content.length
 
-    if (this.active < 0 || this.active > content.length - 1) {
+    if (this.active < 0 || this.active > this.slidesCount - 1) {
       this.active = 0
     }
 
@@ -263,35 +308,18 @@ class AnSlider {
     this.wrapper.role = 'region'
     this.wrapper.ariaLive = 'polite'
 
-    const slider = document.createElement('div')
+    this.slider = document.createElement('div')
+    this.slider.className = 'anSlider'
 
-    slider.className = 'anSlider'
-
-    if (this.indicators) {
-      indicatorsWrapper = document.createElement('div')
-      indicatorsWrapper.className = 'anSlider-indicators'
-    }
-
-    Array.from(content).forEach((item, index) => {
-      const slide = document.createElement('div')
-      slide.className = 'anSlide'
-      slide.id = `slide-${index}-${this.sliderId}`
-      slide.appendChild(item)
-      slider.appendChild(slide)
-      slides.push(slide)
-
-      if (this.indicators) {
-        this.#createIndicator(index, indicatorsWrapper)
-      }
-    })
-
-    fragment.appendChild(slider)
+    content.forEach((item, index) => this.#createSlide(item, index))
+    fragment.appendChild(this.slider)
 
     if (this.indicators) {
-      fragment.appendChild(indicatorsWrapper)
+      this.#addIndicators()
+      fragment.appendChild(this.indicatorsWrapper)
 
-      if (this.buttonColor && CSS.supports('color', this.buttonColor)) {
-        this.wrapper.style.setProperty('--button-color', this.buttonColor)
+      if (this.indicatorColor) {
+        this.wrapper.style.setProperty('--indicator-color', this.indicatorColor)
       }
     }
 
@@ -300,34 +328,14 @@ class AnSlider {
       fragment.appendChild(this.leftArrow)
       fragment.appendChild(this.rightArrow)
 
-      if (this.arrowColor && CSS.supports('color', this.arrowColor)) {
+      if (this.arrowColor) {
         this.wrapper.style.setProperty('--arrow-color', this.arrowColor)
       }
     }
 
     this.#addStyles()
     this.wrapper.appendChild(fragment)
-    this.slider = slider
-    this.slides = slides
-
-    this.slider.addEventListener('scrollsnapchanging', e => {
-      const id = e.snapTargetInline.id
-      const index = parseInt(id.split('-')[1], 10)
-
-      if (self.indicators) {
-        indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
-        self.buttons[index]?.setAttribute('aria-current', true)
-      }
-
-      if (self.arrows) {
-        self.leftArrow.ariaHidden = String(index === 0)
-        self.rightArrow.ariaHidden = String(index === self.slides.length - 1)
-      }
-
-      self.wrapper.dispatchEvent(self.#createCustomEvent('slideChange'))
-    })
-
-    this.slider.addEventListener('scrollsnapchange', _ => self.wrapper.dispatchEvent(self.#createCustomEvent('slideTransitionEnd')))
+    this.#addEventListeners()
 
     if (this.active !== 0) {
       this.goTo(this.active, false)
@@ -341,12 +349,12 @@ class AnSlider {
   }
 
   goTo(index, smooth = true) {
-    if (index < 0 || index > this.slides.length - 1) {
+    if (index < 0 || index > this.slidesCount - 1) {
       return
     }
 
     this.active = index
-    this.slides[index]?.scrollIntoView({
+    this.slider.querySelector(`#slide-${index}-${this.sliderId}`)?.scrollIntoView({
       behavior: smooth ? 'smooth' : 'instant',
       block: 'nearest',
       inline: 'center',

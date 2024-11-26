@@ -15,7 +15,7 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 **Usage**
 -----
 
-1. Include the `an-slider.min.js` file in your HTML document
+1. Include the `an-slider.js` file in your HTML document
 2. Create a container element for the slider with unique css class or id
 3. Add slide elements inside the container
 4. Initialize the slider by calling the `AnSlider` constructor and passing the container element as an option `selector`
@@ -51,10 +51,10 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 * `indicators`: Whether to add dot indicator for each slide (default: `true`)
 * `arrows`: Whether to add arrows for navigation (default: `false`)
 * `initialIndex`: Index of the initial slide (default: `0`)
-* `buttonColor`: Color of the navigation buttons (default: `#000`)
+* `indicatorColor`: Color of the navigation (dots) indicators (default: `#000`)
 * `arrowColor`: Color of the arrows (default: `#000`)
-* `leftArrow`: Icon for the left arrow (default: `<`)
-* `rightArrow`: Icon for the right arrow (default: `>`)
+* `leftArrow`: String with **svg** code for the left arrow (default: `<`)
+* `rightArrow`: String with **svg** code for the right arrow (default: `>`)
 
 > [!TIP]
 > 
@@ -80,4 +80,4 @@ MIT License
 > - [x] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
 > - [x] Add `initialIndex` option
-> - [ ] Find a way to minify the size of the library dramatically
+> - [ ] Add `AutoPlay`

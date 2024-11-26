@@ -77,7 +77,7 @@
 <script src="./js/an-slider.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, buttonColor: 'orange'});
+        const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, indicatorColor: 'orange'});
         const slider2 = new AnSlider({selector: '.slider2', indicators: false});
         new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
 
@@ -88,16 +88,12 @@
         });
 
         const left = document.getElementById('toLeft');
-        left.addEventListener('click', () => {
-            slider2.prev();
-        });
+        left.addEventListener('click', () => slider2.prev());
         const right = document.getElementById('toRight');
-        right.addEventListener('click', () => {
-            slider2.next();
-        });
+        right.addEventListener('click', () => slider2.next());
 
         document.querySelector('.slider3').addEventListener('slideTransitionEnd', (e) => {
-            console.log("Slider 3 slideTransitionEnd: '", e.detail);
+            console.log('Slider 3 slideTransitionEnd: ', e.detail);
         })
 
         document.querySelector('.slider3').addEventListener('slideChange', (e) => {
