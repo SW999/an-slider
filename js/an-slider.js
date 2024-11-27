@@ -233,23 +233,23 @@ class AnSlider {
     indicator.className = 'anSlider-indicator'
     indicator.ariaCurrent = String(i === this.active)
     indicator.ariaLabel = `Go to slide ${i + 1}`
-    indicator.addEventListener('click', () => this.goTo(i))
+    indicator.dataset.index = i
     this.indicatorsWrapper.appendChild(indicator)
   }
 
   #addArrows() {
     this.leftArrow = document.createElement('div')
-    this.leftArrow.className = 'anSlider-left-arrow'
+    this.leftArrow.className = 'anSlider-arrow anSlider-left-arrow'
     this.leftArrow.ariaHidden = 'true'
     this.leftArrow.ariaLabel = 'Back'
     this.leftArrow.innerHTML = this.leftArrowCode
-    this.leftArrow.addEventListener('click', () => this.goTo(this.active - 1))
+    this.leftArrow.dataset.direction = '-1'
 
     this.rightArrow = document.createElement('div')
-    this.rightArrow.classList.add('anSlider-right-arrow')
+    this.rightArrow.className = 'anSlider-arrow anSlider-right-arrow'
     this.rightArrow.ariaLabel = 'Forward'
     this.rightArrow.innerHTML = this.rightArrowCode
-    this.rightArrow.addEventListener('click', () => this.goTo(this.active + 1))
+    this.rightArrow.dataset.direction = '1'
   }
 
   #addIndicators() {
@@ -260,9 +260,22 @@ class AnSlider {
   }
 
   #bindEvents() {
+    this.wrapper.addEventListener('click', e => {
+      const indicator = e.target.closest('.anSlider-indicator')
+      const arrow = e.target.closest('.anSlider-arrow')
+
+      if (indicator) {
+        this.goTo(Number(indicator.dataset.index))
+        return
+      }
+
+      if (arrow) {
+        this.goTo(this.active + Number(arrow.dataset.direction))
+      }
+    })
+
     this.slider.addEventListener('scrollsnapchanging', e => {
-      const id = e.snapTargetInline.id
-      const index = parseInt(id.split('-')[1], 10)
+      const index = Number(e.snapTargetInline.dataset.index)
 
       if (this.indicators) {
         this.indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
@@ -285,6 +298,7 @@ class AnSlider {
   #createSlide(item, index) {
     const slide = document.createElement('div')
     slide.className = 'anSlide'
+    slide.dataset.index = index
     slide.id = `slide-${index}-${this.sliderId}`
     slide.appendChild(item)
     this.slider.appendChild(slide)
