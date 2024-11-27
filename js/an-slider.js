@@ -22,7 +22,7 @@ class AnSlider {
       ? rightArrow
       : '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
-    this.active = initialIndex && !isNaN(Number(initialIndex)) ? initialIndex : 0
+    this.active = initialIndex && !isNaN(Number(initialIndex)) && initialIndex % 1 === 0 && initialIndex > -1 ? initialIndex : 0
     this.indicatorsWrapper = null
     this.#init()
   }
@@ -259,7 +259,7 @@ class AnSlider {
     Array.from({ length: this.slidesCount }).forEach((_, index) => this.#createIndicator(index))
   }
 
-  #addEventListeners() {
+  #bindEvents() {
     this.slider.addEventListener('scrollsnapchanging', e => {
       const id = e.snapTargetInline.id
       const index = parseInt(id.split('-')[1], 10)
@@ -278,6 +278,8 @@ class AnSlider {
     })
 
     this.slider.addEventListener('scrollsnapchange', _ => this.wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd')))
+
+    this.#makeDraggable()
   }
 
   #createSlide(item, index) {
@@ -288,20 +290,12 @@ class AnSlider {
     this.slider.appendChild(slide)
   }
 
-  #init() {
-    const content = this.wrapper.childElementCount ? Array.from(this.wrapper.children) : []
-
-    if (content.length < 1) {
-      console.error('Selector has no content to create slides')
-      return
-    }
-
+  #setupSlider() {
+    const content = Array.from(this.wrapper.children)
     const fragment = document.createDocumentFragment()
-    this.slidesCount = content.length
 
-    if (this.active < 0 || this.active > this.slidesCount - 1) {
-      this.active = 0
-    }
+    this.slidesCount = content.length
+    this.active = this.active > this.slidesCount - 1 ? 0 : this.active
 
     this.wrapper.classList.add('anSlider-wrapper')
     this.wrapper.id = `anSlider-${this.sliderId}`
@@ -333,15 +327,22 @@ class AnSlider {
       }
     }
 
-    this.#addStyles()
     this.wrapper.appendChild(fragment)
-    this.#addEventListeners()
+  }
+
+  #init() {
+    if (this.wrapper.childElementCount < 1) {
+      console.error('Selector has no content to create slides')
+      return
+    }
+
+    this.#addStyles()
+    this.#setupSlider()
+    this.#bindEvents()
 
     if (this.active !== 0) {
       this.goTo(this.active, false)
     }
-
-    this.#makeDraggable()
   }
 
   destroy() {
