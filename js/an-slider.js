@@ -17,9 +17,7 @@ class AnSlider {
   constructor({ selector, indicators = true, arrows = false, initialIndex = 0, autoPlay = false, leftArrow, rightArrow, indicatorColor, arrowColor }) {
     this.#wrapper = document.querySelector(selector)
 
-    if (!selector || !this.#wrapper) {
-      throw new Error('Selector parameter is empty or such element does not exist!')
-    }
+    if (!selector || !this.#wrapper) throw new Error('Selector parameter is empty or such element does not exist!')
 
     this.#indicators = 'boolean' === typeof indicators ? indicators : true
     this.#arrows = 'boolean' === typeof arrows ? arrows : false
@@ -50,12 +48,7 @@ class AnSlider {
   }
 
   #createCustomEvent(name) {
-    return new CustomEvent(name, {
-      detail: {
-        currentIndex: this.activeIndex,
-        totalSlides: this.slidesCount,
-      },
-    })
+    return new CustomEvent(name, { detail: { currentIndex: this.activeIndex, totalSlides: this.slidesCount } })
   }
 
   #makeDraggable() {
@@ -84,9 +77,7 @@ class AnSlider {
         const xDiff = xDown - xUp
         const yDiff = yDown - yUp
 
-        if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff !== 0) {
-          this.goTo(this.activeIndex + (xDiff > 0 ? 1 : -1))
-        }
+        if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff !== 0) this.goTo(this.activeIndex + (xDiff > 0 ? 1 : -1))
 
         xDown = null
         yDown = null
@@ -106,7 +97,6 @@ class AnSlider {
 
   #addStyles() {
     const id = 'anSliderStyles'
-
     if (document.getElementById(id)) return
 
     const sliderStyles = document.createElement('style')
@@ -140,8 +130,7 @@ class AnSlider {
   object-fit: cover;
   vertical-align: bottom;
   transition: opacity .3s ease-in-out;
-  opacity: inherit;
-  user-select: none
+  opacity: inherit
 }
 .anSlide {
   display: flex;
@@ -272,16 +261,13 @@ class AnSlider {
   #bindEvents() {
     this.#wrapper.addEventListener('click', e => {
       const indicator = e.target.closest('.anSlider-indicator')
-      const arrow = e.target.closest('.anSlider-arrow')
-
       if (indicator) {
         this.goTo(Number(indicator.dataset.index))
         return
       }
 
-      if (arrow) {
-        this.goTo(this.activeIndex + Number(arrow.dataset.direction))
-      }
+      const arrow = e.target.closest('.anSlider-arrow')
+      if (arrow) this.goTo(this.activeIndex + Number(arrow.dataset.direction))
     })
 
     this.slider.addEventListener('scrollsnapchanging', e => {
@@ -303,9 +289,7 @@ class AnSlider {
     this.slider.addEventListener('scrollsnapchange', _ => {
       this.#wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd'))
 
-      if (this.playingState === 'played') {
-        this.play(true)
-      }
+      if (this.playingState === 'played') this.play(true)
     })
 
     this.slider.addEventListener('mouseover', () => {
@@ -316,9 +300,7 @@ class AnSlider {
     })
 
     this.slider.addEventListener('mouseout', () => {
-      if (this.playingState === 'paused') {
-        this.play(true)
-      }
+      if (this.playingState === 'paused') this.play(true)
     })
 
     this.#makeDraggable()
@@ -334,7 +316,7 @@ class AnSlider {
   }
 
   #setupSlider() {
-    const content = Array.from(this.#wrapper.children)
+    const content = [...this.#wrapper.children]
     const fragment = document.createDocumentFragment()
 
     this.slidesCount = content.length
@@ -355,9 +337,7 @@ class AnSlider {
       this.#addIndicators()
       fragment.appendChild(this.#indicatorsWrapper)
 
-      if (this.#indicatorColor) {
-        this.#wrapper.style.setProperty('--indicator-color', this.#indicatorColor)
-      }
+      if (this.#indicatorColor) this.#wrapper.style.setProperty('--indicator-color', this.#indicatorColor)
     }
 
     if (this.#arrows) {
@@ -365,30 +345,21 @@ class AnSlider {
       fragment.appendChild(this.#leftArrow)
       fragment.appendChild(this.#rightArrow)
 
-      if (this.#arrowColor) {
-        this.#wrapper.style.setProperty('--arrow-color', this.#arrowColor)
-      }
+      if (this.#arrowColor) this.#wrapper.style.setProperty('--arrow-color', this.#arrowColor)
     }
 
     this.#wrapper.appendChild(fragment)
   }
 
   #init() {
-    if (this.#wrapper.childElementCount < 1) {
-      throw new Error('Selector has no content to create slides!')
-    }
+    if (this.#wrapper.childElementCount < 1) throw new Error('Selector has no content to create slides!')
 
     this.#addStyles()
     this.#setupSlider()
     this.#bindEvents()
 
-    if (this.activeIndex !== 0) {
-      this.goTo(this.activeIndex, false)
-    }
-
-    if (this.autoPlay) {
-      this.play(true)
-    }
+    if (this.activeIndex !== 0) this.goTo(this.activeIndex, false)
+    if (this.autoPlay) this.play(true)
   }
 
   destroy() {
@@ -397,9 +368,7 @@ class AnSlider {
   }
 
   goTo(index, smooth = true) {
-    if (index < 0 || index > this.slidesCount - 1) {
-      return
-    }
+    if (index < 0 || index > this.slidesCount - 1) return
 
     this.activeIndex = index
     this.slider.querySelector(`#slide-${index}-${this.sliderId}`)?.scrollIntoView({
