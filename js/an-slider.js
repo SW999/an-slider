@@ -1,37 +1,44 @@
 class AnSlider {
+  slider
+  slidesCount = 0
   playingState = 'idle' // idle, paused, playing, stopped
-  #autoplayTimer = null
+  #wrapper
+  #indicatorsWrapper
+  #leftArrow
+  #rightArrow
+  #autoplayTimer
+  #indicators
+  #arrows
+  #indicatorColor
+  #arrowColor
+  #leftArrowCode
+  #rightArrowCode
 
   constructor({ selector, indicators = true, arrows = false, initialIndex = 0, autoPlay = false, leftArrow, rightArrow, indicatorColor, arrowColor }) {
-    this.wrapper = document.querySelector(selector)
+    this.#wrapper = document.querySelector(selector)
 
-    if (!selector || !this.wrapper) {
+    if (!selector || !this.#wrapper) {
       throw new Error('Selector parameter is empty or such element does not exist!')
     }
 
-    this.slider = null
-    this.slidesCount = 0
-    this.indicators = 'boolean' === typeof indicators ? indicators : true
-    this.arrows = 'boolean' === typeof arrows ? arrows : false
-    this.indicatorColor = CSS.supports('color', indicatorColor) ? indicatorColor : undefined
-    this.arrowColor = CSS.supports('color', arrowColor) ? arrowColor : undefined
-    this.leftArrow = null
-    this.rightArrow = null
-    this.leftArrowCode = this.#isValidSVG(leftArrow?.trim())
+    this.#indicators = 'boolean' === typeof indicators ? indicators : true
+    this.#arrows = 'boolean' === typeof arrows ? arrows : false
+    this.#indicatorColor = CSS.supports('color', indicatorColor) ? indicatorColor : undefined
+    this.#arrowColor = CSS.supports('color', arrowColor) ? arrowColor : undefined
+    this.#leftArrowCode = this.#isValidSVG(leftArrow?.trim())
       ? leftArrow
       : '<svg viewBox="0 0 143 330" xml:space="preserve"><path stroke="null" d="M3.213 155.996 115.709 6c4.972-6.628 14.372-7.97 21-3 6.627 4.97 7.97 14.373 3 21L33.962 164.997 139.709 306c4.97 6.627 3.626 16.03-3 21a14.929 14.929 0 0 1-8.988 3c-4.56 0-9.065-2.071-12.012-6L3.213 173.996a15 15 0 0 1 0-18z"/></svg>'
-    this.rightArrowCode = this.#isValidSVG(rightArrow?.trim())
+    this.#rightArrowCode = this.#isValidSVG(rightArrow?.trim())
       ? rightArrow
       : '<svg viewBox="0 0 143 330" xml:space="preserve"><path d="M140.001 155.997 27.501 6c-4.972-6.628-14.372-7.97-21-3s-7.97 14.373-3 21l105.75 140.997L3.501 306c-4.97 6.627-3.627 16.03 3 21a14.93 14.93 0 0 0 8.988 3c4.561 0 9.065-2.071 12.012-6l112.5-150.004a15 15 0 0 0 0-18z"/></svg>'
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
-    this.active = initialIndex && !isNaN(Number(initialIndex)) && initialIndex % 1 === 0 && initialIndex > -1 ? initialIndex : 0
-    this.indicatorsWrapper = null
+    this.activeIndex = initialIndex && !isNaN(Number(initialIndex)) && initialIndex % 1 === 0 && initialIndex > -1 ? initialIndex : 0
     this.autoPlay = 'boolean' === typeof autoPlay ? autoPlay : false
     this.#init()
   }
 
   #isValidSVG(str) {
-    if (!this.arrows) return false
+    if (!this.#arrows) return false
 
     try {
       const parser = new DOMParser()
@@ -45,7 +52,7 @@ class AnSlider {
   #createCustomEvent(name) {
     return new CustomEvent(name, {
       detail: {
-        currentIndex: this.active,
+        currentIndex: this.activeIndex,
         totalSlides: this.slidesCount,
       },
     })
@@ -78,7 +85,7 @@ class AnSlider {
         const yDiff = yDown - yUp
 
         if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff !== 0) {
-          this.goTo(this.active + (xDiff > 0 ? 1 : -1))
+          this.goTo(this.activeIndex + (xDiff > 0 ? 1 : -1))
         }
 
         xDown = null
@@ -234,36 +241,36 @@ class AnSlider {
 
     indicator.id = `slide-${i}-indicator-${this.sliderId}`
     indicator.className = 'anSlider-indicator'
-    indicator.ariaCurrent = String(i === this.active)
+    indicator.ariaCurrent = String(i === this.activeIndex)
     indicator.ariaLabel = `Go to slide ${i + 1}`
     indicator.dataset.index = i
-    this.indicatorsWrapper.appendChild(indicator)
+    this.#indicatorsWrapper.appendChild(indicator)
   }
 
   #addArrows() {
-    this.leftArrow = document.createElement('div')
-    this.leftArrow.className = 'anSlider-arrow anSlider-left-arrow'
-    this.leftArrow.ariaHidden = 'true'
-    this.leftArrow.ariaLabel = 'Back'
-    this.leftArrow.innerHTML = this.leftArrowCode
-    this.leftArrow.dataset.direction = '-1'
+    this.#leftArrow = document.createElement('div')
+    this.#leftArrow.className = 'anSlider-arrow anSlider-left-arrow'
+    this.#leftArrow.ariaHidden = 'true'
+    this.#leftArrow.ariaLabel = 'Back'
+    this.#leftArrow.innerHTML = this.#leftArrowCode
+    this.#leftArrow.dataset.direction = '-1'
 
-    this.rightArrow = document.createElement('div')
-    this.rightArrow.className = 'anSlider-arrow anSlider-right-arrow'
-    this.rightArrow.ariaLabel = 'Forward'
-    this.rightArrow.innerHTML = this.rightArrowCode
-    this.rightArrow.dataset.direction = '1'
+    this.#rightArrow = document.createElement('div')
+    this.#rightArrow.className = 'anSlider-arrow anSlider-right-arrow'
+    this.#rightArrow.ariaLabel = 'Forward'
+    this.#rightArrow.innerHTML = this.#rightArrowCode
+    this.#rightArrow.dataset.direction = '1'
   }
 
   #addIndicators() {
-    this.indicatorsWrapper = document.createElement('div')
-    this.indicatorsWrapper.className = 'anSlider-indicators'
+    this.#indicatorsWrapper = document.createElement('div')
+    this.#indicatorsWrapper.className = 'anSlider-indicators'
 
     Array.from({ length: this.slidesCount }).forEach((_, index) => this.#createIndicator(index))
   }
 
   #bindEvents() {
-    this.wrapper.addEventListener('click', e => {
+    this.#wrapper.addEventListener('click', e => {
       const indicator = e.target.closest('.anSlider-indicator')
       const arrow = e.target.closest('.anSlider-arrow')
 
@@ -273,28 +280,28 @@ class AnSlider {
       }
 
       if (arrow) {
-        this.goTo(this.active + Number(arrow.dataset.direction))
+        this.goTo(this.activeIndex + Number(arrow.dataset.direction))
       }
     })
 
     this.slider.addEventListener('scrollsnapchanging', e => {
       const index = Number(e.snapTargetInline.dataset.index)
 
-      if (this.indicators) {
-        this.indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
-        this.indicatorsWrapper?.querySelectorAll('.anSlider-indicator')[index]?.setAttribute('aria-current', true)
+      if (this.#indicators) {
+        this.#indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
+        this.#indicatorsWrapper?.querySelectorAll('.anSlider-indicator')[index]?.setAttribute('aria-current', true)
       }
 
-      if (this.arrows) {
-        this.leftArrow.ariaHidden = String(index === 0)
-        this.rightArrow.ariaHidden = String(index === this.slidesCount - 1)
+      if (this.#arrows) {
+        this.#leftArrow.ariaHidden = String(index === 0)
+        this.#rightArrow.ariaHidden = String(index === this.slidesCount - 1)
       }
 
-      this.wrapper.dispatchEvent(this.#createCustomEvent('slideChange'))
+      this.#wrapper.dispatchEvent(this.#createCustomEvent('slideChange'))
     })
 
     this.slider.addEventListener('scrollsnapchange', _ => {
-      this.wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd'))
+      this.#wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd'))
 
       if (this.playingState === 'played') {
         this.play(true)
@@ -327,16 +334,16 @@ class AnSlider {
   }
 
   #setupSlider() {
-    const content = Array.from(this.wrapper.children)
+    const content = Array.from(this.#wrapper.children)
     const fragment = document.createDocumentFragment()
 
     this.slidesCount = content.length
-    this.active = this.active > this.slidesCount - 1 ? 0 : this.active
+    this.activeIndex = this.activeIndex > this.slidesCount - 1 ? 0 : this.activeIndex
 
-    this.wrapper.classList.add('anSlider-wrapper')
-    this.wrapper.id = `anSlider-${this.sliderId}`
-    this.wrapper.role = 'region'
-    this.wrapper.ariaLive = 'polite'
+    this.#wrapper.classList.add('anSlider-wrapper')
+    this.#wrapper.id = `anSlider-${this.sliderId}`
+    this.#wrapper.role = 'region'
+    this.#wrapper.ariaLive = 'polite'
 
     this.slider = document.createElement('div')
     this.slider.className = 'anSlider'
@@ -344,30 +351,30 @@ class AnSlider {
     content.forEach((item, index) => this.#createSlide(item, index))
     fragment.appendChild(this.slider)
 
-    if (this.indicators) {
+    if (this.#indicators) {
       this.#addIndicators()
-      fragment.appendChild(this.indicatorsWrapper)
+      fragment.appendChild(this.#indicatorsWrapper)
 
-      if (this.indicatorColor) {
-        this.wrapper.style.setProperty('--indicator-color', this.indicatorColor)
+      if (this.#indicatorColor) {
+        this.#wrapper.style.setProperty('--indicator-color', this.#indicatorColor)
       }
     }
 
-    if (this.arrows) {
+    if (this.#arrows) {
       this.#addArrows()
-      fragment.appendChild(this.leftArrow)
-      fragment.appendChild(this.rightArrow)
+      fragment.appendChild(this.#leftArrow)
+      fragment.appendChild(this.#rightArrow)
 
-      if (this.arrowColor) {
-        this.wrapper.style.setProperty('--arrow-color', this.arrowColor)
+      if (this.#arrowColor) {
+        this.#wrapper.style.setProperty('--arrow-color', this.#arrowColor)
       }
     }
 
-    this.wrapper.appendChild(fragment)
+    this.#wrapper.appendChild(fragment)
   }
 
   #init() {
-    if (this.wrapper.childElementCount < 1) {
+    if (this.#wrapper.childElementCount < 1) {
       throw new Error('Selector has no content to create slides!')
     }
 
@@ -375,8 +382,8 @@ class AnSlider {
     this.#setupSlider()
     this.#bindEvents()
 
-    if (this.active !== 0) {
-      this.goTo(this.active, false)
+    if (this.activeIndex !== 0) {
+      this.goTo(this.activeIndex, false)
     }
 
     if (this.autoPlay) {
@@ -385,8 +392,8 @@ class AnSlider {
   }
 
   destroy() {
-    this.wrapper.remove()
-    // TODO: remove event listeners
+    clearTimeout(this.#autoplayTimer)
+    this.#wrapper.remove()
   }
 
   goTo(index, smooth = true) {
@@ -394,7 +401,7 @@ class AnSlider {
       return
     }
 
-    this.active = index
+    this.activeIndex = index
     this.slider.querySelector(`#slide-${index}-${this.sliderId}`)?.scrollIntoView({
       behavior: smooth ? 'smooth' : 'instant',
       block: 'nearest',
@@ -403,15 +410,15 @@ class AnSlider {
   }
 
   next() {
-    this.goTo(this.active + 1)
+    this.goTo(this.activeIndex + 1)
   }
 
   prev() {
-    this.goTo(this.active - 1)
+    this.goTo(this.activeIndex - 1)
   }
 
   play(delayed = false) {
-    const nextIndex = this.active + 1 > this.slidesCount - 1 ? 0 : this.active + 1
+    const nextIndex = this.activeIndex + 1 > this.slidesCount - 1 ? 0 : this.activeIndex + 1
 
     clearTimeout(this.#autoplayTimer)
     this.#autoplayTimer = setTimeout(() => this.goTo(nextIndex), delayed ? 3000 : 0)
