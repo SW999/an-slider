@@ -55,6 +55,7 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 * `arrowColor`: Color of the arrows (default: `#000`)
 * `leftArrow`: String with **svg** code for the left arrow (default: `<`)
 * `rightArrow`: String with **svg** code for the right arrow (default: `>`)
+* `AutoPlay`: Whether to start autoplay (default: `false`)
 
 > [!TIP]
 > 
@@ -64,6 +65,11 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 ------------
 
 * `destroy`: Removes the slider instance from the DOM
+* `gotTo`: Changes the active slide to the specified index
+* `next`: Changes the active slide to the next slide
+* `prev`: Changes the active slide to the previous slide
+* `play`: Starts autoplay
+* `pause`: Pauses autoplay
 
 **License**
 ------------
@@ -80,4 +86,4 @@ MIT License
 > - [x] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
 > - [x] Add `initialIndex` option
-> - [ ] Add `AutoPlay`
+> - [x] Add `AutoPlay`

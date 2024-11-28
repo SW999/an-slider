@@ -60,11 +60,16 @@
     <br>
     <button id="toLeft" style="display:inline-block">Prev slide</button>
     <button id="toRight" style="display:inline-block;margin-left:10px">Next slide</button>
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vestibulum purus vitae felis pulvinar semper. Sed at
-        purus consectetur, semper urna nec, vehicula justo. Vestibulum libero ex, dignissim non scelerisque sed,
-        faucibus malesuada turpis.
-    </p>
+    <h2>Methods</h2>
+    <ul>
+        <li><strong>destroy</strong>: Removes the slider instance from the DOM</li>
+        <li><strong>gotTo</strong>: Changes the active slide to the specified index</li>
+        <li><strong>next</strong>: Changes the active slide to the next slide</li>
+        <li><strong>prev</strong>: Changes the active slide to the previous slide</li>
+        <li><strong>play</strong>: Starts autoplay</li>
+        <li><strong>pause</strong>: Pauses autoplay</li>
+    </ul>
+    <br>
     <section class="slider3">
         <img alt="1" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture1">
         <img alt="2" src="https://placehold.co/600x500/EEE/00F/png?text=Some\nPicture2">
@@ -72,14 +77,17 @@
         <img alt="4" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture4">
         <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
     </section>
+    <br>
+    <button id="play" style="display:inline-block">⏵︎</button>
+    <button id="pause" style="display:inline-block;margin-left:10px">⏸︎</button>
     <br/>
 </div>
 <script src="./js/an-slider.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, indicatorColor: 'orange'});
-        const slider2 = new AnSlider({selector: '.slider2', indicators: false});
-        new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
+        const slider2 = new AnSlider({selector: '.slider2', indicators: false, autoPlay: true});
+        const slider3 = new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
 
         const remove = document.getElementById('removeSlider');
         remove.addEventListener('click', () => {
@@ -97,8 +105,13 @@
         })
 
         document.querySelector('.slider3').addEventListener('slideChange', (e) => {
-            console.log("Slider 3: current index is '" + e.detail.currentIndex + "', total slides - " + e.detail.totalSlides);
+            console.log(`Slider 3: current index is '${e.detail.currentIndex}', total slides - ${e.detail.totalSlides}`);
         })
+
+        const play = document.getElementById('play');
+        play.addEventListener('click', () => slider3.play());
+        const pause = document.getElementById('pause');
+        pause.addEventListener('click', () => slider3.pause());
 
         console.log(Object.getOwnPropertyNames(slider1));
         console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(slider1)));

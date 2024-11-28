@@ -1,10 +1,12 @@
 class AnSlider {
-  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, leftArrow, rightArrow, indicatorColor, arrowColor }) {
+  playingState = 'idle' // idle, paused, playing, stopped
+  #autoplayTimer = null
+
+  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, autoPlay = false, leftArrow, rightArrow, indicatorColor, arrowColor }) {
     this.wrapper = document.querySelector(selector)
 
     if (!selector || !this.wrapper) {
-      console.error('Selector is empty or does not exist!')
-      return
+      throw new Error('Selector parameter is empty or such element does not exist!')
     }
 
     this.slider = null
@@ -24,6 +26,7 @@ class AnSlider {
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
     this.active = initialIndex && !isNaN(Number(initialIndex)) && initialIndex % 1 === 0 && initialIndex > -1 ? initialIndex : 0
     this.indicatorsWrapper = null
+    this.autoPlay = 'boolean' === typeof autoPlay ? autoPlay : false
     this.#init()
   }
 
@@ -290,7 +293,26 @@ class AnSlider {
       this.wrapper.dispatchEvent(this.#createCustomEvent('slideChange'))
     })
 
-    this.slider.addEventListener('scrollsnapchange', _ => this.wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd')))
+    this.slider.addEventListener('scrollsnapchange', _ => {
+      this.wrapper.dispatchEvent(this.#createCustomEvent('slideTransitionEnd'))
+
+      if (this.playingState === 'played') {
+        this.play(true)
+      }
+    })
+
+    this.slider.addEventListener('mouseover', () => {
+      if (this.playingState === 'played') {
+        clearTimeout(this.#autoplayTimer)
+        this.playingState = 'paused'
+      }
+    })
+
+    this.slider.addEventListener('mouseout', () => {
+      if (this.playingState === 'paused') {
+        this.play(true)
+      }
+    })
 
     this.#makeDraggable()
   }
@@ -346,8 +368,7 @@ class AnSlider {
 
   #init() {
     if (this.wrapper.childElementCount < 1) {
-      console.error('Selector has no content to create slides')
-      return
+      throw new Error('Selector has no content to create slides!')
     }
 
     this.#addStyles()
@@ -357,10 +378,15 @@ class AnSlider {
     if (this.active !== 0) {
       this.goTo(this.active, false)
     }
+
+    if (this.autoPlay) {
+      this.play(true)
+    }
   }
 
   destroy() {
     this.wrapper.remove()
+    // TODO: remove event listeners
   }
 
   goTo(index, smooth = true) {
@@ -382,5 +408,18 @@ class AnSlider {
 
   prev() {
     this.goTo(this.active - 1)
+  }
+
+  play(delayed = false) {
+    const nextIndex = this.active + 1 > this.slidesCount - 1 ? 0 : this.active + 1
+
+    clearTimeout(this.#autoplayTimer)
+    this.#autoplayTimer = setTimeout(() => this.goTo(nextIndex), delayed ? 3000 : 0)
+    this.playingState = 'played'
+  }
+
+  pause() {
+    clearTimeout(this.#autoplayTimer)
+    this.playingState = 'stopped'
   }
 }
