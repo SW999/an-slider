@@ -18,18 +18,12 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 1. Include the `an-slider.js` file in your HTML document
 2. Create a container element for the slider with unique css class or id
 3. Add slide elements inside the container
-4. Initialize the slider by calling the `AnSlider` constructor and passing the container element as an option `selector`
+4. Initialize the slider by calling the `AnSlider` constructor and using the config object
 
 **Example**
 ------------
 
 ```html
-<div class="slider1">
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-  <div>Slide 3</div>
-</div>
-
 <div id="slider2">
   <img alt="1" src="https://placehold.co/600x500/EEE/F00/png?text=Some\nPicture1">
   <img alt="2" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture2">
@@ -38,8 +32,34 @@ An(other) js slider. A lightweight and customizable gallery component made via p
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AnSlider({selector: '.slider1'});
-        new AnSlider({selector: '#slider2', indicators: false, arrows: true});
+        const slider = new AnSlider({
+            // required option
+            selector: '#slider2',
+            
+            // show/hide slide indicators (default: true)
+            indicators: false,
+            
+            // show/hide navigation arrows (default: false)
+            arrows: true,
+            
+            // initial slide index (default: 0)
+            initialIndex: 2,
+            
+            // color of navigation indicators (default: #000)
+            indicatorColor: '#fff',
+            
+            // color of navigation arrows (default: #000). Works for default arrows only
+            arrowColor: '#fff',
+            
+            // start autoplay (default: false)
+            autoPlay: true,
+            
+            // svg code for left arrow (default: '<')
+            leftArrow: '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M50,50 L0,0 L0,100 Z" fill="#000"/></svg>',
+            
+            // svg code for right arrow (default: '>')
+            rightArrow: '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 L50,0 L50,100 Z" fill="#000"/></svg>'
+         });
     })
 </script>
 ```
