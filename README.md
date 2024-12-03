@@ -16,9 +16,9 @@ An(other) js sliding gallery. A lightweight and customizable gallery component m
 -----
 
 1. Include the `an-slider.js` file in your HTML document
-2. Create a container element for the slider with unique css class or id
-3. Add slide elements inside the container
-4. Initialize the slider by calling the `AnSlider` constructor and using the config object
+2. Create a container element for the gallery with unique css class or id
+3. Add sliding elements inside the container
+4. Initialize the gallery by calling the `AnSlider` constructor and using the config object
 
 **Example**
 ------------
@@ -76,6 +76,7 @@ An(other) js sliding gallery. A lightweight and customizable gallery component m
 * `leftArrow`: String with **svg** code for the left arrow (default: `<`)
 * `rightArrow`: String with **svg** code for the right arrow (default: `>`)
 * `AutoPlay`: Whether to start autoplay (default: `false`)
+* `vertical`: Whether to create vertical variant (default: `false`)
 
 > [!TIP]
 > 
@@ -84,7 +85,7 @@ An(other) js sliding gallery. A lightweight and customizable gallery component m
 **Methods**
 ------------
 
-* `destroy`: Removes the slider instance from the DOM
+* `destroy`: Removes the gallery instance from the DOM
 * `gotTo`: Changes the active slide to the specified index
 * `next`: Changes the active slide to the next slide
 * `prev`: Changes the active slide to the previous slide
@@ -108,6 +109,6 @@ MIT License
 > - [x] Add `AutoPlay`
 > - [ ] Fix for Firefox and Safari (`scrollsnapchanging` event not fired)
 > - [ ] Fix dragging issue for vertical variant on desktop
-> - [ ] Add `MutationObserver` to stop autoplay when slider gallery is not on the viewport
+> - [ ] Add `MutationObserver` to stop autoplay when sliding gallery is not on the viewport
 > - [ ] Add set of default slide sizes and support for custom size
 > - [ ] Add variant with previews (horizontal and vertical)
