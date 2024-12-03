@@ -1,7 +1,7 @@
 **An-Slider**
 ================
 
-An(other) js slider. A lightweight and customizable gallery component made via pure JavaScript, without dependencies.
+An(other) js sliding gallery. A lightweight and customizable gallery component made via pure JavaScript, without dependencies.
 
 **Features**
 ------------
@@ -99,11 +99,15 @@ MIT License
 
 > [!NOTE]
 > ## TODO:
-> - [ ] Add set of default slide sizes and support for custom size
-> - [ ] Add variant with previews (horizontal and vertical)
+> - [x] Add variant with vertical sliding
 > - [x] Add `slideTransitionEnd` - custom event. Fired when the slide transition ends
 > - [x] Add `slideChange` - custom event. Fired when the active slide changes
 > - [x] Add methods `next`, `prev`, `goTo`, `destroy`
 > - [x] Add accessibility support
 > - [x] Add `initialIndex` option
 > - [x] Add `AutoPlay`
+> - [ ] Fix for Firefox and Safari (`scrollsnapchanging` event not fired)
+> - [ ] Fix dragging issue for vertical variant on desktop
+> - [ ] Add `MutationObserver` to stop autoplay when slider gallery is not on the viewport
+> - [ ] Add set of default slide sizes and support for custom size
+> - [ ] Add variant with previews (horizontal and vertical)

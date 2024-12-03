@@ -9,10 +9,11 @@
     <style>
         * {
             box-sizing: border-box;
-        }
-        div, img, section {
             margin: 0;
             padding: 0;
+        }
+        div, img, section {
+
             border: 0;
             font-size: 100%;
             vertical-align: baseline;
@@ -81,13 +82,25 @@
     <button id="play" style="display:inline-block">⏵︎</button>
     <button id="pause" style="display:inline-block;margin-left:10px">⏸︎</button>
     <br/>
+    <div style="width: 450px;max-width:100vw;height:550px;max-height:100dvh;margin: 0 auto;border:thin solid black;">
+        <section class="slider4">
+            <img alt="1" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture1">
+            <img alt="2" src="https://placehold.co/600x500/EEE/00F/png?text=Some\nPicture2">
+            <img alt="3" src="https://placehold.co/600x500/EEE/F00/png?text=Another\nPicture3">
+            <img alt="4" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture4">
+            <img alt="5" src="https://placehold.co/600x500/EEE/0F0/png?text=New\nPicture5">
+        </section>
+    </div>
+    <br>
+    <br>
 </div>
 <script src="./js/an-slider.js" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const slider1 = new AnSlider({selector: '.slider1', initialIndex: 2, indicatorColor: 'orange'});
-        const slider2 = new AnSlider({selector: '.slider2', indicators: false, autoPlay: true});
+        const slider2 = new AnSlider({selector: '.slider2', indicators: false, autoPlay: false});
         const slider3 = new AnSlider({selector: '.slider3', arrows: true, arrowColor: 'green'});
+       new AnSlider({selector: '.slider4', vertical: true});
 
         const remove = document.getElementById('removeSlider');
         remove.addEventListener('click', () => {

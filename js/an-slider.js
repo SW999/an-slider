@@ -1,20 +1,21 @@
 class AnSlider {
+  playingState = 'idle' // idle, paused, playing, stopped
   slider
   slidesCount = 0
-  playingState = 'idle' // idle, paused, playing, stopped
-  #wrapper
+  #arrowColor
+  #arrows
+  #autoplayTimer
+  #indicatorColor
+  #indicators
   #indicatorsWrapper
   #leftArrow
-  #rightArrow
-  #autoplayTimer
-  #indicators
-  #arrows
-  #indicatorColor
-  #arrowColor
   #leftArrowCode
+  #rightArrow
   #rightArrowCode
+  #vertical
+  #wrapper
 
-  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, autoPlay = false, leftArrow, rightArrow, indicatorColor, arrowColor }) {
+  constructor({ selector, indicators = true, arrows = false, initialIndex = 0, autoPlay = false, vertical = false, leftArrow, rightArrow, indicatorColor, arrowColor }) {
     this.#wrapper = document.querySelector(selector)
 
     if (!selector || !this.#wrapper) throw new Error('Selector parameter is empty or such element does not exist!')
@@ -32,6 +33,7 @@ class AnSlider {
     this.sliderId = `${Date.now()}-${Math.floor(Math.random() * 1000)}`
     this.activeIndex = initialIndex && !isNaN(Number(initialIndex)) && initialIndex % 1 === 0 && initialIndex > -1 ? initialIndex : 0
     this.autoPlay = 'boolean' === typeof autoPlay ? autoPlay : false
+    this.#vertical = 'boolean' === typeof vertical ? vertical : false
     this.#init()
   }
 
@@ -110,6 +112,9 @@ class AnSlider {
 .anSlider-wrapper {
   max-width: 100%
 }
+.anSlider-wrapper:has(.anSlider-vertical) {
+  height: 100%
+}
 .anSlider-wrapper {
   --indicator-color: #000;
   --arrow-color: #000;
@@ -119,51 +124,63 @@ class AnSlider {
     display: none
   }
 }
-.anSlide {
-  scroll-snap-align: center;
-  scroll-snap-stop: always
-}
-.anSlide > img,
-.anSlide > video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  vertical-align: bottom;
-  transition: opacity .3s ease-in-out;
-  opacity: inherit
-}
-.anSlide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 calc(100vw - 16px);
-  visibility: visible;
-  transition: opacity .3s ease-in-out
-}
-@media (min-width: 466px) {
-  .anSlide {
-    flex: 0 0 450px
-  }
-}
 .anSlider {
   display: flex;
   flex-flow: row nowrap;
   gap: 35px;
-  visibility: hidden;
-  scroll-snap-type: x mandatory;
   overflow: scroll hidden;
+  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  cursor: grab
+  cursor: grab;
+  scrollbar-width: none;
+  &.anSlider-vertical {
+    flex-flow: column nowrap;
+    height: 100%;
+    overflow: hidden scroll;
+    scroll-snap-type: y mandatory;
+    .anSlide {
+      max-width: 100%;
+      flex: 0 0 calc(50% - 32px)
+    }
+  }
 }
-.anSlider::-webkit-scrollbar {
-  display: none
+.anSlide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex: 0 0 calc(100vw - 16px);
+  transition: opacity .3s ease-in-out;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  & > img,
+  & > video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    vertical-align: bottom;
+    transition: opacity .3s ease-in-out;
+    opacity: inherit
+  }
 }
 .anSlider-indicators {
   margin-top: 10px;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 7px
+}
+.anSlider-vertical + .anSlider-indicators {
+  position: absolute;
+  inset: 50% 10px auto auto;
+  margin-top: 0;
+  flex-flow: column nowrap;
+  transform: translateY(-50%);
+  .anSlider-indicator[aria-current="true"] {
+    margin: 2px 0;
+  }
 }
 .anSlider-indicator {
   width: 15px;
@@ -179,26 +196,7 @@ class AnSlider {
   cursor: default;
   pointer-events: none;
   transform: scale(1.5);
-  transition: transform .3s ease-in, background-color .3s ease-in
-}
-@media (hover: hover) {
-  .anSlider-indicator {
-    width: 10px;
-    height: 10px;
-    cursor: pointer
-  }
-  .anSlider-indicators {
-    gap: 4px
-  }
-  .anSlider:hover > :not(:hover) {
-    opacity: .5
-  }
-  .anSlider-left-arrow:hover,
-  .anSlider-right-arrow:hover {
-    svg {
-      transform: scale(1.2)
-    }
-  }
+  transition: transform .3s ease-in, margin .3s ease-in, background-color .3s ease-in
 }
 .anSlider-left-arrow {
   left: 0
@@ -216,10 +214,48 @@ class AnSlider {
   cursor: pointer;
   transform: translateY(-50%);
   svg {
-    transition: transform .3s ease-in
+    transition: transform .3s ease-in;
+    path {
+      fill: var(--arrow-color, #000)
+    }
   }
-  svg path {
-    fill: var(--arrow-color, #000)
+}
+@media (hover: hover) {
+  .anSlider {
+    visibility: hidden
+  }
+  .anSlider:hover > :not(:hover) {
+    opacity: .5
+  }
+  .anSlide {
+    visibility: visible
+  }
+  .anSlider-indicator {
+    width: 10px;
+    height: 10px;
+    cursor: pointer
+  }
+  .anSlider-indicators {
+    gap: 4px
+  }
+  .anSlider-left-arrow:hover,
+  .anSlider-right-arrow:hover {
+    svg {
+      transform: scale(1.2)
+    }
+  }
+}
+@media (min-width: 466px) {
+  .anSlide {
+    flex: 0 0 450px
+  }
+  .anSlider-vertical {
+    .anSlide {
+      flex: 0 0 calc(50% - 16px)
+    }
+    & + .anSlider-indicators {
+      inset: 50% -20px auto auto;
+    }
   }
 }`
     document.head.appendChild(sliderStyles)
@@ -234,6 +270,13 @@ class AnSlider {
     indicator.ariaLabel = `Go to slide ${i + 1}`
     indicator.dataset.index = i
     this.#indicatorsWrapper.appendChild(indicator)
+  }
+
+  #addIndicators() {
+    this.#indicatorsWrapper = document.createElement('nav')
+    this.#indicatorsWrapper.className = 'anSlider-indicators'
+
+    Array.from({length: this.slidesCount}).forEach((_, index) => this.#createIndicator(index))
   }
 
   #addArrows() {
@@ -251,13 +294,6 @@ class AnSlider {
     this.#rightArrow.dataset.direction = '1'
   }
 
-  #addIndicators() {
-    this.#indicatorsWrapper = document.createElement('div')
-    this.#indicatorsWrapper.className = 'anSlider-indicators'
-
-    Array.from({ length: this.slidesCount }).forEach((_, index) => this.#createIndicator(index))
-  }
-
   #bindEvents() {
     this.#wrapper.addEventListener('click', e => {
       const indicator = e.target.closest('.anSlider-indicator')
@@ -271,7 +307,7 @@ class AnSlider {
     })
 
     this.slider.addEventListener('scrollsnapchanging', e => {
-      const index = Number(e.snapTargetInline.dataset.index)
+      const index = Number(this.#vertical ? e.snapTargetBlock.dataset.index : e.snapTargetInline.dataset.index)
 
       if (this.#indicators) {
         this.#indicatorsWrapper?.querySelector('[aria-current="true"]')?.setAttribute('aria-current', false)
@@ -328,7 +364,7 @@ class AnSlider {
     this.#wrapper.ariaLive = 'polite'
 
     this.slider = document.createElement('div')
-    this.slider.className = 'anSlider'
+    this.slider.className = `anSlider${this.#vertical ? ' anSlider-vertical' : ''}`
 
     content.forEach((item, index) => this.#createSlide(item, index))
     fragment.appendChild(this.slider)
