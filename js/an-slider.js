@@ -177,7 +177,7 @@ class AnSlider {
   inset: 50% 10px auto auto;
   margin-top: 0;
   flex-flow: column nowrap;
-  transform: translateY(-50%);
+  translate: 0 -50%;
   .anSlider-indicator[aria-current="true"] {
     margin: 2px 0;
   }
@@ -187,16 +187,15 @@ class AnSlider {
   height: 15px;
   border: 1px solid var(--indicator-color, #000);
   border-radius: 100%;
-  transform: scale(1);
-  transition: transform .3s ease-out, background-color .3s ease-out
+  scale: 1;
+  transition: .3s ease
 }
 .anSlider-indicator[aria-current="true"] {
   margin: 0 2px;
   background-color: var(--indicator-color, #000);
   cursor: default;
   pointer-events: none;
-  transform: scale(1.5);
-  transition: transform .3s ease-in, margin .3s ease-in, background-color .3s ease-in
+  scale: 1.5
 }
 .anSlider-left-arrow {
   left: 0
@@ -212,9 +211,9 @@ class AnSlider {
   height: 42px;
   padding: 5px 10px;
   cursor: pointer;
-  transform: translateY(-50%);
+  translate: 0 -50%;
   svg {
-    transition: transform .3s ease-in;
+    transition: .3s ease-in;
     path {
       fill: var(--arrow-color, #000)
     }
@@ -241,7 +240,7 @@ class AnSlider {
   .anSlider-left-arrow:hover,
   .anSlider-right-arrow:hover {
     svg {
-      transform: scale(1.2)
+      scale: 1.2
     }
   }
 }

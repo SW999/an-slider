@@ -12,27 +12,112 @@
             margin: 0;
             padding: 0;
         }
+        body {
+            padding: 0 10px;
+            --font-size-body: clamp(12px, calc(0.8rem + 0.25vw), 20px);
+            font-family: Helvetica, sans-serif;
+            font-size: var(--font-size-body);
+            line-height: 1.5;
+        }
+        h2 {
+            margin: 40px 0 20px 0;
+        }
         div, img, section {
-
             border: 0;
             font-size: 100%;
             vertical-align: baseline;
         }
         p {
-            margin: 10px;
+            margin: 10px 0;
             font-size: 16px;
+        }
+
+        button {
+            background-image: linear-gradient(#42A1EC, #0070C9);
+            border: 1px solid #0077CC;
+            border-radius: 4px;
+            box-sizing: border-box;
+            color: #FFFFFF;
+            cursor: pointer;
+            direction: ltr;
+            display: block;
+            font-family: "SF Pro Text", "SF Pro Icons", "AOS Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 17px;
+            font-weight: 400;
+            letter-spacing: -.022em;
+            line-height: 1.47059;
+            min-width: 30px;
+            overflow: visible;
+            padding: 4px 15px;
+            text-align: center;
+            vertical-align: baseline;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+
+            &:disabled {
+                cursor: default;
+                opacity: .3;
+            }
+
+            &:hover {
+                background-image: linear-gradient(#51A9EE, #147BCD);
+                border-color: #1482D0;
+                text-decoration: none;
+            }
+
+            &:active {
+                background-image: linear-gradient(#3D94D9, #0067B9);
+                border-color: #006DBC;
+                outline: none;
+            }
+
+            &:focus {
+                box-shadow: rgba(131, 192, 253, 0.5) 0 0 0 3px;
+                outline: none;
+            }
         }
         .container {
             max-width: 1024px;
             margin: 0 auto;
         }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0 40px 0;
+            div {
+                max-width: 320px;
+            }
+        }
+        ul {
+            list-style-position: inside;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 0;
+            }
+            header {
+                flex-direction: row;
+                gap: 40px;
+                margin: 40px 0 60px 0;
+
+                div {
+                    max-width: none;
+                }
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>AnSlider - an(other) JS Slider</h1>
-    <p>A lightweight and customizable slider component made with pure JavaScript, without any dependencies.</p>
-    <br>
+    <header>
+        <img src="./img/anSlider.svg" width="350" alt="AnSlider - an(other) JS sliding gallery">
+        <div>A lightweight and customizable sliding gallery component made with pure JavaScript, without any dependencies.</div>
+    </header>
     <section class="slider1">
         <img alt="1" src="https://placehold.co/600x500/EEE/F00/png?text=Some\nPicture1">
         <img alt="2" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture2">
@@ -42,7 +127,6 @@
     </section>
     <br>
     <button id="removeSlider" style="display:block;margin:0 auto">Remove slider</button>
-    <br>
     <h2>Features</h2>
     <ul>
         <li><strong>Touch-friendly</strong>: Supports touch events</li>
@@ -82,7 +166,8 @@
     <button id="play" style="display:inline-block">⏵︎</button>
     <button id="pause" style="display:inline-block;margin-left:10px">⏸︎</button>
     <br/>
-    <div style="width: 450px;max-width:100vw;height:550px;max-height:100dvh;margin: 0 auto;border:thin solid black;">
+    <br/>
+    <div style="width: 450px;max-width:100%;height:550px;max-height:100dvh;margin: 0 auto;border:thin solid black;">
         <section class="slider4">
             <img alt="1" src="https://placehold.co/600x500/EEE/0F0/png?text=Another\nPicture1">
             <img alt="2" src="https://placehold.co/600x500/EEE/00F/png?text=Some\nPicture2">
