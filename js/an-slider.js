@@ -104,12 +104,7 @@ class AnSlider {
     const sliderStyles = document.createElement('style')
     sliderStyles.id = id
     sliderStyles.textContent = `
-.anSlider-wrapper,
-.anSlider-wrapper * {
-  box-sizing: border-box
-}
-.anSlide > img,
-.anSlider-wrapper {
+.anSlider-wrapper, .anSlide > img {
   max-width: 100%
 }
 .anSlider-wrapper:has(.anSlider-vertical) {
@@ -118,8 +113,11 @@ class AnSlider {
 .anSlider-wrapper {
   --indicator-color: #000;
   --arrow-color: #000;
+  box-sizing: border-box;
   position: relative;
-
+  & * {
+    box-sizing: inherit
+  }
   [aria-hidden="true"] {
     display: none
   }
@@ -237,12 +235,9 @@ class AnSlider {
   .anSlider-indicators {
     gap: 4px
   }
-  .anSlider-left-arrow:hover,
-  .anSlider-right-arrow:hover {
-    svg {
+  :is(.anSlider-left-arrow:hover, .anSlider-right-arrow:hover) svg {
       scale: 1.2
     }
-  }
 }
 @media (min-width: 466px) {
   .anSlide {
